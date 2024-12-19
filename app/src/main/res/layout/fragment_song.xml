@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.fragment.SongFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Songs"
+            android:textStyle="bold|italic"
+            android:textSize="@dimen/title_size"
+            android:layout_gravity="end"
+            android:layout_marginTop="@dimen/padding_top_app"
+            android:layout_marginEnd="@dimen/padding_end_app" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="end">
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sort_songs_by_character"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:checkable="true"
+                app:iconTint="@color/icon_select_color"
+                app:icon="@drawable/text"
+                android:backgroundTint="@color/app_background"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sort_songs_by_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:checkable="true"
+                app:icon="@drawable/time"
+                android:layout_marginEnd="8dp"
+                app:iconTint="@color/icon_select_color"
+                android:backgroundTint="@color/app_background"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sort_songs_bt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.IconButton"
+                app:icon="@drawable/arrow_item_selector"
+                android:checkable="true"
+                app:iconTint="@color/white"
+                android:backgroundTint="@color/app_background"/>
+
+
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/songs_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"/>
+
+    </LinearLayout>
+
+</FrameLayout>

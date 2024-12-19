@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.fragment.QuickPickFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Quick picks"
+                android:textSize="@dimen/title_size"
+                android:textStyle="italic|bold"
+                android:layout_gravity="end"
+                android:layout_marginTop="@dimen/padding_top_app"
+                android:layout_marginEnd="@dimen/padding_end_app"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/suggest_recyclerView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="@dimen/item_margin_start"
+                android:orientation="horizontal"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Related Albums"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="@dimen/title_margin_start"
+                android:textSize="@dimen/filed_size"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/relatedAlbums_recyclerView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="@dimen/item_margin_start"
+                android:orientation="horizontal"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Similar artists"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="@dimen/title_margin_start"
+                android:textSize="@dimen/filed_size"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/similarArtists_recyclerView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="@dimen/item_margin_start"
+                android:orientation="horizontal"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Playlists you might like"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="@dimen/title_margin_start"
+                android:textSize="@dimen/filed_size"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/mayLikes_recyclerView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="@dimen/item_margin_start"
+                android:orientation="horizontal"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="24dp"/>
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+
+
+</FrameLayout>
