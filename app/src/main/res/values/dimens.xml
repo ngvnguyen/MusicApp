@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="navigate_text_size">14sp</dimen>
-    <dimen name="title_size">32sp</dimen>
+    <dimen name="title_size">28sp</dimen>
     <dimen name="filed_size">20sp</dimen>
     <dimen name="navigate_icon_size">12dp</dimen>
     <dimen name="padding_top_app">32dp</dimen>

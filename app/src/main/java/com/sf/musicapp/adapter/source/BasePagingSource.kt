@@ -2,6 +2,7 @@ package com.sf.musicapp.adapter.source
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.sf.musicapp.utils.Limits
 
 class BasePagingSource<T:Any>(
     private val getData:suspend (Int)-> List<T>
@@ -21,7 +22,7 @@ class BasePagingSource<T:Any>(
             LoadResult.Page(
                 data,
                 if (nextPage>0) nextPage-1 else null,
-                nextPage+1
+                if (data.size==Limits.PAGE_SIZE) nextPage+1 else null
             )
         }catch (e: Exception){
             return LoadResult.Error(e)

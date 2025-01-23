@@ -1,7 +1,9 @@
 package com.sf.musicapp.network.retrofit
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.sf.musicapp.network.api.AlbumApi
 import com.sf.musicapp.network.api.ArtistApi
+import com.sf.musicapp.network.api.PlaylistApi
 import com.sf.musicapp.network.api.TrackApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -32,6 +34,11 @@ object RetrofitInstance {
     val trackApi by lazy {
         retrofit.create(TrackApi::class.java)
     }
-
+    val albumApi by lazy{
+        retrofit.create(AlbumApi::class.java)
+    }
+    val playlistApi by lazy{
+        retrofit.create(PlaylistApi::class.java)
+    }
 
 }

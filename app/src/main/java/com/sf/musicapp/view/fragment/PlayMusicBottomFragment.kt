@@ -26,6 +26,8 @@ import com.sf.musicapp.view.base.BaseBottomSheetFragment
 import com.sf.musicapp.R
 import com.sf.musicapp.data.model.Track
 import com.sf.musicapp.service.MusicService
+import com.sf.musicapp.utils.PlayerHelper
+import com.sf.musicapp.utils.toDuration
 import com.sf.musicapp.view.activity.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -34,6 +36,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -43,7 +46,7 @@ import kotlin.text.toInt
 
 @AndroidEntryPoint
 class PlayMusicBottomFragment(
-    private val onClose:(Track)->Unit={}
+    private val onClose:()->Unit={}
 ): BaseBottomSheetFragment<FragmentPlayMusicBinding>() {
 
     companion object{
@@ -53,11 +56,11 @@ class PlayMusicBottomFragment(
 
     private var action:Int = NEW_PLAY
     //private val viewModel: AppViewModel by activityViewModels()
+
     @Inject
-    lateinit var player: ExoPlayer
-    private lateinit var track: Track
-    private var updateJob: Job?=null
-    private lateinit var listener:Player.Listener
+    lateinit var playerHelper: PlayerHelper
+
+
 
 
     override fun getViewBinding(): FragmentPlayMusicBinding {
@@ -69,20 +72,29 @@ class PlayMusicBottomFragment(
     override fun initView() {
         super.initView()
         val playerView = binding.playerView
-        playerView.player = player
+        playerView.player = playerHelper.player
+
 
         if (action == NEW_PLAY){
-            val mediaItem = MediaItem.fromUri(track.audioDownload)
-            player.clearMediaItems()
-            player.addMediaItem(mediaItem)
-            player.play()
+            playerHelper.play()
         }
-        binding.artist.text = track.artistName
-        binding.title.text = track.name
-        if (action == ON_GOING){
-            binding.seekbar.max = player.duration.toInt()
-            binding.seekbar.progress = player.currentPosition.toInt()
-            updateSeekbar()
+
+        lifecycleScope.launch{
+            launch{
+                playerHelper.duration.collectLatest { duration->
+                    binding.seekbar.max = duration.toInt()
+                }
+            }
+            launch{
+                playerHelper.currentPosition.collectLatest { progress->
+                    binding.seekbar.progress = progress.toInt()
+                    binding.duration.text = (progress/1000).toDuration()
+                }
+            }
+
+        }
+        if (action == ON_GOING&& !playerHelper.isPlaying.value){
+            binding.playButton.setIconResource(R.drawable.play)
         }
 
         binding.seekbar.setOnSeekBarChangeListener(object:SeekBar.OnSeekBarChangeListener{
@@ -93,60 +105,19 @@ class PlayMusicBottomFragment(
             ) {}
             override fun onStartTrackingTouch(p0: SeekBar?) {}
             override fun onStopTrackingTouch(p0: SeekBar?) {
-                p0?.let { player.seekTo(it.progress.toLong()) }
+                p0?.let { playerHelper.seekTo(it.progress.toLong())}
             }
         })
-
-        listener = object: Player.Listener{
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                super.onPlaybackStateChanged(playbackState)
-                if (playbackState == Player.STATE_BUFFERING){
-                    updateJob?.cancel()
-                }
-                if (playbackState == Player.STATE_READY){
-                    binding.seekbar.max = player.duration.toInt()
-                    binding.seekbar.progress = player.currentPosition.toInt()
-                    updateSeekbar()
-                }
-            }
-
-            override fun onPositionDiscontinuity(
-                oldPosition: Player.PositionInfo,
-                newPosition: Player.PositionInfo,
-                reason: Int
-            ) {
-                super.onPositionDiscontinuity(oldPosition, newPosition, reason)
-                binding.seekbar.progress = newPosition.positionMs.toInt()
-                binding.seekbar.max = player.duration.toInt()
-            }
-        }
-
-        player.addListener(listener)
-
-
-    }
-
-    private fun updateSeekbar(){
-        updateJob?.cancel()
-        updateJob = CoroutineScope(Dispatchers.Main).launch{
-            val progressCount = 50
-            while(true){
-                binding.seekbar.progress+=progressCount
-                delay(progressCount.toLong())
-            }
-        }
 
     }
 
     override fun addEvent() {
         super.addEvent()
         binding.playButton.setOnClickListener{
-            if (player.isPlaying){
-                player.pause()
-                binding.playButton.setIconResource(R.drawable.play)
+            if (playerHelper.isPlaying.value){
+                playerHelper.pause()
             }else{
-                player.play()
-                binding.playButton.setIconResource(R.drawable.pause)
+                playerHelper.resume()
             }
         }
 
@@ -154,20 +125,50 @@ class PlayMusicBottomFragment(
             onFavouriteButtonClicked()
         }
 
+        binding.forwardButton.setOnClickListener{
+            if (playerHelper.canSeekToNextTrack()) playerHelper.seekToNextTrack()
+        }
+        binding.previousButton.setOnClickListener{
+            if (playerHelper.canSeekToPreviousTrack()) playerHelper.seekToPreviousTrack()
+        }
+
+    }
+
+    override fun addObservers() {
+        super.addObservers()
+        lifecycleScope.launch{
+            launch{
+                playerHelper.isPlaying.collectLatest {isPlaying->
+                    if (isPlaying){
+                        binding.playButton.setIconResource(R.drawable.pause)
+                    }else{
+                        binding.playButton.setIconResource(R.drawable.play)
+                    }
+                }
+            }
+            launch{
+                playerHelper.currentTrack.collectLatest { track->
+                    track?.let{
+                        binding.artist.text = it.artistName
+                        binding.title.text = it.name
+                    }
+                }
+            }
+        }
+
     }
 
     @Deprecated(
         "Use show(manager, tag, track) instead",
-        ReplaceWith("show(manager, tag, track, action)"),
+        ReplaceWith("show(manager, tag, action)"),
         DeprecationLevel.ERROR
     )
     override fun show(manager: FragmentManager, tag: String?) {
         //super.show(manager, tag)
     }
 
-    fun show(manager: FragmentManager, tag: String?,track:Track?,action:Int){
+    fun show(manager: FragmentManager, tag: String?,action:Int){
         super.show(manager,tag)
-        if (track!=null) this.track = track
         this.action = action
     }
 
@@ -180,44 +181,15 @@ class PlayMusicBottomFragment(
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        dialog?.let {
-            val bottomSheet = it.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-            bottomSheet.layoutParams.height = ActionBar.LayoutParams.MATCH_PARENT
-            bottomSheet.background = null
-            val behavior = BottomSheetBehavior.from(bottomSheet)
-            behavior.state = BottomSheetBehavior.STATE_EXPANDED
-            behavior.skipCollapsed = true
 
-            behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-                override fun onStateChanged(bottomSheet: View, newState: Int) {
-                    if (newState == BottomSheetBehavior.STATE_HIDDEN){
-                        dismiss()
-                    }
-                }
 
-                override fun onSlide(bottomSheet: View, slideOffset: Float) {
-
-                }
-
-            })
-        }
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        onClose()
     }
 
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
-        onClose(track)
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-        onClose(track)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        updateJob?.cancel()
-        player.removeListener(listener)
+        onClose()
     }
 }

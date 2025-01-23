@@ -1,7 +1,10 @@
 package com.sf.musicapp.data.model
 
 data class Album(
-    val title:String,
-    val author:String,
-    val createdTime:Int
+    val id:String,
+    val name:String,
+    val releaseDate:String,
+    val artistId:String,
+    val artistName:String,
+    val image:String
 )

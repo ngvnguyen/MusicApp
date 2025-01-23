@@ -41,10 +41,10 @@ class ArtistItemAdapter(
         data: Artist
     ) {
         if (binding is ItemArtistLayoutBinding){
-            binding.artist.text = data.name.truncate(Limits.TRACK_CHAR_LIMIT)
+            binding.artist.text = data.name.truncate(Limits.ARTIST_CHAR_LIMIT)
             binding.subscribe.text = data.joinDate.toString()
             if(data.imageUrl.isNotEmpty())
-                binding.img.loadImg(data.imageUrl,binding.img,R.drawable.person)
+                binding.img.loadImg(data.imageUrl,R.drawable.person)
 
             binding.root.setOnClickListener{
                 onItemClick()

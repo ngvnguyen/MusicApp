@@ -2,7 +2,9 @@ package com.sf.musicapp.utils
 
 object Limits {
     const val ARTIST_CHAR_LIMIT = 12
-    const val TRACK_CHAR_LIMIT = 26
+    const val ALBUM_CHAR_LIMIT = 12
+    const val TRACK_CHAR_LIMIT = 15
+    const val PLAYLIST_CHAR_LIMIT = 11
     const val PAGE_SIZE = 10
 }
 
