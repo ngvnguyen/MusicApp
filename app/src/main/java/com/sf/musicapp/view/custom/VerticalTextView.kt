@@ -7,6 +7,8 @@ import android.view.Gravity
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatTextView
 
+
+// custom text view dọc
 class VerticalTextView(context:Context,attrs: AttributeSet): AppCompatTextView(context,attrs) {
     private var topDown: Boolean=false
 

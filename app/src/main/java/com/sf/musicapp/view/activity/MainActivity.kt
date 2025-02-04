@@ -37,8 +37,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     private var navigationItems: List<NavigationItem> = listOf()
     private var expandButton = ExpandButton.COLLAPSE
     private lateinit var navController: NavController
+
+    // WARNING: khởi tạo viewModel, ở các fragment có sử dụng nên xóa dòng này sẽ gây lỗi
     private val viewModel: AppViewModel by viewModels()
     private val albumPickerViewModel: AlbumPickerViewModel by viewModels()
+
     private lateinit var mediaController: MediaController
     private lateinit var controllerFuture: ListenableFuture<MediaController>
 
@@ -83,8 +86,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             expandEvent()
         }
         binding.musicBar.setOnClickListener{
-            playMusicBottomFragment.show(supportFragmentManager,"play music",
-                PlayMusicBottomFragment.ON_GOING)
+            playMusicBottomFragment.show(supportFragmentManager,"play music")
         }
         binding.playButton.setOnClickListener{
             if (playerHelper.isPlaying.value) playerHelper.pause()
@@ -96,7 +98,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     override fun addObservers() {
         super.addObservers()
         lifecycleScope.launch{
+            // dùng sateFLow để theo dõi hoạt động phát nhạc
             launch{
+
                 playerHelper.isPlaying.collectLatest {isPlaying->
                     if (isPlaying){
                         binding.playButton.setIconResource(R.drawable.pause)
@@ -120,17 +124,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     override fun initData() {
         super.initData()
     }
-
+    // lấy trạng thái hiện tại của nút mở rộng
     private fun getButtonExpandRefresh(): ExpandButton{
         return if(binding.toolbar.visibility == View.VISIBLE) ExpandButton.EXPAND
             else ExpandButton.COLLAPSE
     }
+    // sự kiện click vào nút mở rộng
     private fun expandEvent(){
         expandButton = getButtonExpandRefresh()
         binding.buttonExpand.setImageResource(expandButton.resId)
         binding.toolbar.visibility = expandButton.visibility
     }
-
+    // thiết lập navigation bar
     private fun setupNavigation(){
         navigationItems.forEach { navigationItem->
             navigationItem.layout.setOnClickListener{
@@ -148,7 +153,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
         }
     }
-
+    // ẩn các navigation item không được chọn
     private fun hideNavigationIconExcept(resId:Int){
         navigationItems.forEach {navigationItem->
             if (navigationItem.layout.id!=resId){
@@ -160,7 +165,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
 
 
-
+    // danh sách các navigation item hiện có
     fun getNavigationItem(): List<NavigationItem>{
         return if (navigationItems.isNotEmpty()) navigationItems else listOf(
             NavigationItem(
@@ -198,6 +203,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //tạo session token và media controller cho media session service
         sessionToken = SessionToken(
             this,
             ComponentName(this, MusicService::class.java))
@@ -214,12 +221,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     }
 
 }
+
+// định nghĩa các nút navigation
 data class NavigationItem(
     val layout: ConstraintLayout,
     val imgView: ImageView,
     val title: VerticalTextView,
     val fragmentId:Int
 )
+
+// enum cho nút mở rộng
 enum class ExpandButton(@DrawableRes val resId: Int,val visibility:Int){
     EXPAND(R.drawable.chevron_forward,View.GONE),
     COLLAPSE(R.drawable.chevron_back, View.VISIBLE)

@@ -14,6 +14,8 @@ import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 
+
+// base cho fragment
 abstract class BaseFragment<T : ViewBinding> : Fragment() {
     private var _binding: T? = null
     private lateinit var dialog: Dialog

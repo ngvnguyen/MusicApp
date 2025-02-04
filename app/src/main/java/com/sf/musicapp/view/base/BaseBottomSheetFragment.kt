@@ -5,10 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentManager
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
+
+// class base cho bottom sheet
 abstract class BaseBottomSheetFragment<T: ViewBinding>: BottomSheetDialogFragment() {
     private var _binding:T?=null
 
@@ -33,6 +36,7 @@ abstract class BaseBottomSheetFragment<T: ViewBinding>: BottomSheetDialogFragmen
         addObservers()
     }
 
+    // mở rộng bottomSheet full màn hình và bỏ khả năng đóng 1 phần
     override fun onStart() {
         super.onStart()
         dialog?.let {
@@ -72,5 +76,11 @@ abstract class BaseBottomSheetFragment<T: ViewBinding>: BottomSheetDialogFragmen
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun show(manager: FragmentManager, tag: String?) {
+        if (isAdded.not()){
+            super.show(manager, tag)
+        }
     }
 }

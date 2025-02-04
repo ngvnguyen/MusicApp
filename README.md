@@ -4,7 +4,7 @@ An opensource android native app, this app provides a seamless experience for ex
 ## Technology used
 The app is built using the following technologies:
 - **XML Layout** for designing the UI.
-- **DataBinding** for binding UI components to data sources.
+- **ViewBinding** for binding UI components to data sources.
 - **Retrofit** for making network requests.
 - **Glide** for image loading and caching.
 - **Room Database** for local data storage.

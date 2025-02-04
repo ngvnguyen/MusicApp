@@ -28,8 +28,6 @@ class QuickPickFragment() : BaseFragment<FragmentQuickPickBinding>(){
     }
 
     @Inject
-    lateinit var player: ExoPlayer
-    @Inject
     lateinit var playerHelper: PlayerHelper
     private lateinit var playMusicBottomFragment: PlayMusicBottomFragment
     private val viewModel: AppViewModel by activityViewModels()

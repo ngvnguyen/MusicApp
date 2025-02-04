@@ -18,7 +18,12 @@ import kotlinx.coroutines.launch
 class PlayerHelper(
     val player:ExoPlayer
 ) {
-    //ms
+
+    companion object{
+        private const val PROGRESS_COUNT = 50L
+    }
+
+    //đơn vị ms
     private val _duration = MutableStateFlow(0L)
     val duration = _duration as StateFlow<Long>
 
@@ -32,7 +37,7 @@ class PlayerHelper(
     val currentTrack = _currentTrack as StateFlow<Track?>
 
     private var job: Job? = null
-    private val progressCount = 50L
+
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val playlist = mutableListOf<Track>()
 
@@ -53,6 +58,10 @@ class PlayerHelper(
                         player.seekToNext()
                         play()
                     } else stop()
+
+                    Player.STATE_IDLE -> {
+
+                    }
                 }
 
 
@@ -91,8 +100,8 @@ class PlayerHelper(
         job?.cancel()
         job = scope.launch {
             while (isActive) {
-                delay(progressCount)
-                _currentPosition.value += progressCount
+                delay(PROGRESS_COUNT)
+                _currentPosition.value += PROGRESS_COUNT
             }
 
         }
@@ -118,7 +127,7 @@ class PlayerHelper(
         player.clearMediaItems()
     }
 
-    fun insertNewPlaylist(tracks: List<Track>) {
+    fun insertPlaylist(tracks: List<Track>) {
         val mis = mutableListOf<MediaItem>()
         playlist.addAll(tracks)
         playlist.forEach {
@@ -134,7 +143,6 @@ class PlayerHelper(
     fun prepare() = player.prepare()
     fun resume() {
         player.play()
-        updateJob()
     }
 
     fun play() {
@@ -144,12 +152,10 @@ class PlayerHelper(
 
     fun stop() {
         player.stop()
-        job?.cancel()
     }
 
     fun pause() {
         player.pause()
-        job?.cancel()
     }
     fun seekToNextTrack() = player.seekToNextMediaItem()
     fun seekToPreviousTrack() = player.seekToPreviousMediaItem()

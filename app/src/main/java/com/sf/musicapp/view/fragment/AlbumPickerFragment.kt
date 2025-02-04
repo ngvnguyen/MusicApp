@@ -2,7 +2,6 @@ package com.sf.musicapp.view.fragment
 
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sf.musicapp.R
@@ -40,11 +39,11 @@ class AlbumPickerFragment: BaseBottomSheetFragment<FragmentAlbumPickerBinding>()
         playMusicBottomFragment = (requireActivity() as MainActivity).playMusicBottomFragment
 
         binding.image.loadImg(album.image,R.drawable.musical_notes)
+        binding.albumName.text = album.name
 
         adapter = SmallItemAdapter{ track->
             playerHelper.playNewTrack(track)
-            playMusicBottomFragment.show(parentFragmentManager, "play music",
-                PlayMusicBottomFragment.NEW_PLAY)
+            playMusicBottomFragment.show(parentFragmentManager, "play music")
         }
         binding.albumRecyclerView.adapter = adapter
         binding.albumRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
@@ -60,9 +59,8 @@ class AlbumPickerFragment: BaseBottomSheetFragment<FragmentAlbumPickerBinding>()
             lifecycleScope.launch{
                 playerHelper.clearMediaItem()
                 val tracks = albumPickerViewModel.getAllTrack()
-                playerHelper.insertNewPlaylist(tracks)
-                playMusicBottomFragment.show(parentFragmentManager, "play music",
-                    PlayMusicBottomFragment.NEW_PLAY)
+                playerHelper.insertPlaylist(tracks)
+                playMusicBottomFragment.show(parentFragmentManager, "play music")
                 playerHelper.play()
             }
         }
@@ -82,13 +80,15 @@ class AlbumPickerFragment: BaseBottomSheetFragment<FragmentAlbumPickerBinding>()
     }
 
     @Deprecated(
-        "Use show(manager, tag, track) instead",
+        "Use show(manager, tag, album) instead",
         ReplaceWith("show(manager, tag, album)"),
         DeprecationLevel.ERROR
     )
     override fun show(manager: FragmentManager, tag: String?) {
         //super.show(manager, tag)
     }
+
+    // dùng funtion thay cho hàm mặc định để set album
     fun show(manager: FragmentManager, tag: String?,album : Album){
         this.album= album
         super.show(manager,tag)

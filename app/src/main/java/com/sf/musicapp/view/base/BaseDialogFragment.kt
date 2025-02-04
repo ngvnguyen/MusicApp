@@ -13,6 +13,8 @@ import android.widget.ProgressBar
 import androidx.fragment.app.DialogFragment
 import androidx.viewbinding.ViewBinding
 
+
+// class base cho dialog
 abstract class BaseDialogFragment<T : ViewBinding> : DialogFragment() {
     private var _binding: T? = null
     private lateinit var dialogLoad: Dialog

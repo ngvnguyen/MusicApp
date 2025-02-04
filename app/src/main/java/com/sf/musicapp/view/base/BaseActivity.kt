@@ -12,6 +12,7 @@ import com.sf.musicapp.R
 import com.sf.musicapp.utils.setNavigationBarColor
 import com.sf.musicapp.utils.setStatusBarColor
 
+// class base của activity
 abstract class BaseActivity<T : ViewBinding> : AppCompatActivity() {
     private var _binding: T? = null
     private lateinit var dialog: Dialog
@@ -33,15 +34,20 @@ abstract class BaseActivity<T : ViewBinding> : AppCompatActivity() {
         addObservers()
         initData()
     }
-
+    // lấy dataBinding
     abstract fun getDataBinding(): T
+    // khởi tạo viewModel nếu cần
     open fun initViewModel() {}
+    // khởi tạo giao diện
     open fun initView() {
         setNavigationBarColor(R.color.app_background)
         setStatusBarColor(R.color.app_background)
     }
+    // thêm các sự kiện
     open fun addEvent() {}
+    // thêm theo dõi với liveData, stateFlow
     open fun addObservers() {}
+    // khởi tạo dữ liệu
     open fun initData() {}
 
     override fun onDestroy() {

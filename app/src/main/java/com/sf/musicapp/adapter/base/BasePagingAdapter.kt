@@ -11,7 +11,7 @@ import androidx.viewbinding.ViewBinding
 import androidx.viewbinding.ViewBindings
 import okhttp3.internal.notify
 
-
+// base paging adapter cho các loại dữ liệu
 abstract class BasePagingAdapter<T:Any>(
     diffCallback: DiffUtil.ItemCallback<T>
 ): PagingDataAdapter<T, RecyclerView.ViewHolder>(diffCallback) {

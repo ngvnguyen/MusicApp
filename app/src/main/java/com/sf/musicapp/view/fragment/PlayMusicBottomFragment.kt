@@ -49,12 +49,6 @@ class PlayMusicBottomFragment(
     private val onClose:()->Unit={}
 ): BaseBottomSheetFragment<FragmentPlayMusicBinding>() {
 
-    companion object{
-        const val NEW_PLAY =1
-        const val ON_GOING =2
-    }
-
-    private var action:Int = NEW_PLAY
     //private val viewModel: AppViewModel by activityViewModels()
 
     @Inject
@@ -74,12 +68,9 @@ class PlayMusicBottomFragment(
         val playerView = binding.playerView
         playerView.player = playerHelper.player
 
-
-        if (action == NEW_PLAY){
-            playerHelper.play()
-        }
-
         lifecycleScope.launch{
+
+            // cập nhật thanh tiến trình
             launch{
                 playerHelper.duration.collectLatest { duration->
                     binding.seekbar.max = duration.toInt()
@@ -93,9 +84,9 @@ class PlayMusicBottomFragment(
             }
 
         }
-        if (action == ON_GOING&& !playerHelper.isPlaying.value){
+        if (playerHelper.isPlaying.value){
             binding.playButton.setIconResource(R.drawable.play)
-        }
+        }else binding.playButton.setIconResource(R.drawable.pause)
 
         binding.seekbar.setOnSeekBarChangeListener(object:SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(
@@ -137,6 +128,8 @@ class PlayMusicBottomFragment(
     override fun addObservers() {
         super.addObservers()
         lifecycleScope.launch{
+
+            // theo dõi trạng thái của player
             launch{
                 playerHelper.isPlaying.collectLatest {isPlaying->
                     if (isPlaying){
@@ -156,20 +149,6 @@ class PlayMusicBottomFragment(
             }
         }
 
-    }
-
-    @Deprecated(
-        "Use show(manager, tag, track) instead",
-        ReplaceWith("show(manager, tag, action)"),
-        DeprecationLevel.ERROR
-    )
-    override fun show(manager: FragmentManager, tag: String?) {
-        //super.show(manager, tag)
-    }
-
-    fun show(manager: FragmentManager, tag: String?,action:Int){
-        super.show(manager,tag)
-        this.action = action
     }
 
     private fun onFavouriteButtonClicked(){

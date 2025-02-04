@@ -71,6 +71,7 @@ class MusicService: MediaSessionService() {
         manager.createNotificationChannel(channel)
     }
 
+    // tạo pending intent
     private fun createSessionActivityIntentPending(): PendingIntent{
         val sessionIntent = Intent(this, MainActivity::class.java)
         return PendingIntent.getActivity(

@@ -5,7 +5,7 @@ import android.content.Intent
 import com.sf.musicapp.service.MusicService
 import dagger.hilt.android.HiltAndroidApp
 
-
+// chạy music Service
 @HiltAndroidApp
 class MusicApp: Application(){
     override fun onCreate() {
