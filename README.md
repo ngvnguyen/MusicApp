@@ -1,5 +1,6 @@
 ## Overview
 An opensource android native app, this app provides a seamless experience for exploring and playing music.
+<img src="image.png" alt="Description" width="400"/>
 ![Screenshot_2025-02-12-20-49-38-403_com sf musicapp](https://github.com/user-attachments/assets/c002afad-a0d0-4626-8160-36f3e0225c8d)
 
 ## Technology used
