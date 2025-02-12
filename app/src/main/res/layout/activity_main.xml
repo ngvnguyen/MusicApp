@@ -225,11 +225,11 @@
             android:id="@+id/musicBar"
             android:visibility="gone">
 
-            <androidx.media3.ui.PlayerView
+            <ImageView
                 android:id="@+id/player_view"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                app:use_controller="false"
+                android:scaleType="fitXY"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"

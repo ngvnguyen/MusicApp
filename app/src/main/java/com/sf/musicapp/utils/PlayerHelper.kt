@@ -1,6 +1,9 @@
 package com.sf.musicapp.utils
 
+import android.content.Context
+import android.net.Uri
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.sf.musicapp.data.model.Track
@@ -22,6 +25,12 @@ class PlayerHelper(
     companion object{
         private const val PROGRESS_COUNT = 50L
     }
+    enum class RepeatMode{
+        OFF,
+        ONE,
+        ALL,
+        SHUFFLE
+    }
 
     //đơn vị ms
     private val _duration = MutableStateFlow(0L)
@@ -39,7 +48,13 @@ class PlayerHelper(
     private var job: Job? = null
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val playlist = mutableListOf<Track>()
+    val playlist = mutableListOf<Track>()
+
+    private val _isEnded = MutableStateFlow<Boolean>(false)
+    val isEnded = _isEnded as StateFlow<Boolean>
+
+    private val _currentRepeatMode = MutableStateFlow(RepeatMode.OFF)
+    val currentRepeatMode = _currentRepeatMode as StateFlow<RepeatMode>
 
     init {
         player.addListener(object : Player.Listener {
@@ -51,13 +66,17 @@ class PlayerHelper(
                         _currentPosition.value = player.currentPosition
                         _duration.value = player.duration
                         if (_isPlaying.value) updateJob()
+                        _isEnded.value = false
                     }
 
                     Player.STATE_ENDED -> if (canSeekToNextTrack()) {
                         job?.cancel()
                         player.seekToNext()
                         play()
-                    } else stop()
+                    } else {
+                        stop()
+                        _isEnded.value = true
+                    }
 
                     Player.STATE_IDLE -> {
 
@@ -110,8 +129,12 @@ class PlayerHelper(
 
     fun insert(track: Track) {
         playlist.add(track)
-        val mi = MediaItem.fromUri(track.audioDownload)
+        val mi = createMediaItem(track)
         player.addMediaItem(mi)
+    }
+    fun findTrackIndex(track:Track):Int?{
+        val i = playlist.indexOf(track)
+        return if (i==-1) null else i
     }
 
     fun playNewTrack(track: Track) {
@@ -128,17 +151,31 @@ class PlayerHelper(
     }
 
     fun insertPlaylist(tracks: List<Track>) {
+        clearMediaItem()
         val mis = mutableListOf<MediaItem>()
         playlist.addAll(tracks)
         playlist.forEach {
-            val mi = MediaItem.fromUri(it.audioDownload)
+            val mi = createMediaItem(it)
             mis.add(mi)
         }
         player.addMediaItems(mis)
-        prepare()
     }
 
-    fun seekTo(positionMs: Long) = player.seekTo(positionMs)
+    private fun createMediaItem(track: Track): MediaItem{
+        return MediaItem.Builder()
+            .setUri(track.audioDownload)
+            .setMediaMetadata(
+                MediaMetadata.Builder()
+                    .setTitle(track.name)
+                    .setArtist(track.artistName)
+                    .setArtworkUri(Uri.parse(track.image))
+                    .build()
+            )
+            .build()
+    }
+
+    fun seekToMs(positionMs: Long) = player.seekTo(positionMs)
+    fun seekTo(index:Int) = player.seekTo(index,0)
 
     fun prepare() = player.prepare()
     fun resume() {
@@ -150,6 +187,12 @@ class PlayerHelper(
         player.play()
     }
 
+    fun replay(){
+        player.seekTo(0,0)
+        prepare()
+        player.play()
+    }
+
     fun stop() {
         player.stop()
     }
@@ -157,6 +200,60 @@ class PlayerHelper(
     fun pause() {
         player.pause()
     }
+
+    fun updateRepeatMode(context: Context){
+        val repeatMode = SharePreferences.getRepeatMode(context)
+        when(repeatMode){
+            RepeatMode.OFF -> {
+                _currentRepeatMode.value = RepeatMode.OFF
+                player.repeatMode = Player.REPEAT_MODE_OFF
+                player.shuffleModeEnabled = false
+            }
+
+            RepeatMode.ONE -> {
+                _currentRepeatMode.value = RepeatMode.ONE
+                player.repeatMode = Player.REPEAT_MODE_ONE
+                player.shuffleModeEnabled = false
+            }
+            RepeatMode.ALL -> {
+                _currentRepeatMode.value = RepeatMode.ALL
+                player.repeatMode = Player.REPEAT_MODE_ALL
+                player.shuffleModeEnabled = false
+            }
+            RepeatMode.SHUFFLE -> {
+                _currentRepeatMode.value = RepeatMode.SHUFFLE
+                player.repeatMode = Player.REPEAT_MODE_OFF
+                player.shuffleModeEnabled = true
+            }
+        }
+    }
+
+    fun changeRepeatMode(context: Context){
+        when(_currentRepeatMode.value){
+            RepeatMode.OFF -> {
+                _currentRepeatMode.value = RepeatMode.ONE
+                player.repeatMode = Player.REPEAT_MODE_ONE
+                SharePreferences.setRepeatModePref(context,_currentRepeatMode.value)
+            }
+            RepeatMode.ONE -> {
+                _currentRepeatMode.value = RepeatMode.ALL
+                SharePreferences.setRepeatModePref(context,_currentRepeatMode.value)
+                player.repeatMode = Player.REPEAT_MODE_ALL
+            }
+            RepeatMode.ALL -> {
+                _currentRepeatMode.value = RepeatMode.SHUFFLE
+                SharePreferences.setRepeatModePref(context,_currentRepeatMode.value)
+                player.shuffleModeEnabled = true
+            }
+            RepeatMode.SHUFFLE -> {
+                _currentRepeatMode.value = RepeatMode.OFF
+                player.shuffleModeEnabled = false
+                SharePreferences.setRepeatModePref(context,_currentRepeatMode.value)
+                player.repeatMode = Player.REPEAT_MODE_OFF
+            }
+        }
+    }
+
     fun seekToNextTrack() = player.seekToNextMediaItem()
     fun seekToPreviousTrack() = player.seekToPreviousMediaItem()
 

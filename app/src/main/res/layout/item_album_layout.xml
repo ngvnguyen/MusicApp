@@ -22,6 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="8dp"
         android:textSize="@dimen/item_title"
+        android:maxLines="1"
         android:id="@+id/title" />
 
     <TextView
@@ -31,6 +32,7 @@
         app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintStart_toStartOf="parent"
         android:textSize="@dimen/item_content"
+        android:maxLines="1"
         android:layout_marginTop="4dp"
         android:textColor="@color/not_select"
         android:id="@+id/date"/>

@@ -1,21 +1,23 @@
 package com.sf.musicapp.view.fragment
 
-import android.transition.Visibility
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.media3.ui.PlayerNotificationManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sf.musicapp.R
 import com.sf.musicapp.adapter.ItemAdapter
 import com.sf.musicapp.adapter.paging.SmallItemAdapter
-import com.sf.musicapp.data.model.Album
+import com.sf.musicapp.data.model.Playlist
 import com.sf.musicapp.data.model.Track
-import com.sf.musicapp.databinding.FragmentAlbumPickerBinding
+import com.sf.musicapp.databinding.FragmentPlaylistPickerBinding
+import com.sf.musicapp.utils.Jamendo
 import com.sf.musicapp.utils.Limits
 import com.sf.musicapp.utils.PlayerHelper
-import com.sf.musicapp.utils.loadImg
 import com.sf.musicapp.utils.shareText
 import com.sf.musicapp.view.activity.MainActivity
 import com.sf.musicapp.view.activity.viewmodel.AppViewModel
@@ -26,48 +28,46 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AlbumPickerFragment: BaseBottomSheetFragment<FragmentAlbumPickerBinding>() {
+class PlaylistPickerFragment : BaseBottomSheetFragment<FragmentPlaylistPickerBinding>() {
+
     @Inject
     lateinit var playerHelper: PlayerHelper
 
-    private lateinit var album: Album
     private val appViewModel: AppViewModel by activityViewModels()
     private lateinit var adapter: ItemAdapter
-    private lateinit var playMusicBottomFragment: PlayMusicBottomFragment
+    private lateinit var playlist: Playlist
     private var tracks = listOf<Track>()
+    private lateinit var playMusicBottomFragment: PlayMusicBottomFragment
     private lateinit var adapterPager: SmallItemAdapter
 
-    override fun getViewBinding(): FragmentAlbumPickerBinding {
-        return FragmentAlbumPickerBinding.inflate(layoutInflater)
+    override fun getViewBinding(): FragmentPlaylistPickerBinding {
+        return FragmentPlaylistPickerBinding.inflate(layoutInflater)
     }
-
 
     override fun initView() {
         super.initView()
-
         playMusicBottomFragment = (requireActivity() as MainActivity).playMusicBottomFragment
+        binding.playlistName.text = playlist.name
 
-        binding.image.loadImg(album.image,R.drawable.musical_notes)
-        binding.albumName.text = album.name
-
-        adapter = ItemAdapter{ track->
-            playerHelper.playNewTrack(track)
-            playMusicBottomFragment.show(parentFragmentManager, playMusicBottomFragment.tag)
+        adapter = ItemAdapter(){
+            playerHelper.playNewTrack(it)
+            playMusicBottomFragment.show(parentFragmentManager,"play music")
         }
         adapterPager = SmallItemAdapter{
             playerHelper.playNewTrack(it)
             playMusicBottomFragment.show(parentFragmentManager, playMusicBottomFragment.tag)
         }
-        binding.albumRecyclerView.adapter = adapter
-        binding.albumRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
-        lifecycleScope.launch{
-            tracks = appViewModel.getAllTrackByAlbumId(album.id)
+        binding.playlistRecyclerView.adapter = adapter
+        binding.playlistRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
 
+        lifecycleScope.launch{
+            tracks = appViewModel.getAllTrackByPlaylistId(playlist.id)
             if (tracks.isEmpty()){
                 binding.noTrack.visibility = View.VISIBLE
             }else binding.noTrack.visibility = View.GONE
 
-            if (tracks.size> Limits.MAX_ITEM) {
+
+            if (tracks.size>= Limits.MAX_ITEM) {
                 adapter.setData(tracks.take(Limits.MAX_ITEM))
                 binding.viewAll.visibility = View.VISIBLE
             }
@@ -75,23 +75,21 @@ class AlbumPickerFragment: BaseBottomSheetFragment<FragmentAlbumPickerBinding>()
                 adapter.setData(tracks)
                 binding.viewAll.visibility = View.GONE
             }
-
-
         }
-
-
     }
 
     override fun addEvent() {
+        super.addEvent()
         binding.playButton.setOnClickListener{
-            lifecycleScope.launch{
-                playerHelper.insertPlaylist(tracks)
-                playMusicBottomFragment.show(parentFragmentManager, playMusicBottomFragment.tag)
-                playerHelper.play()
-            }
+            playerHelper.insertPlaylist(tracks)
+            playerHelper.play()
+            playMusicBottomFragment.show(parentFragmentManager,playMusicBottomFragment.tag)
+        }
+        binding.shareButton.setOnClickListener{
+            context?.shareText(Jamendo.getSharePlaylistUrl(playlist.id))
         }
         binding.viewAll.setOnClickListener{
-            binding.albumRecyclerView.adapter = adapterPager
+            binding.playlistRecyclerView.adapter = adapterPager
             lifecycleScope.launch{
                 appViewModel.trackSetPager.collectLatest {
                     adapterPager.submitData(it)
@@ -99,34 +97,17 @@ class AlbumPickerFragment: BaseBottomSheetFragment<FragmentAlbumPickerBinding>()
             }
             binding.viewAll.visibility = View.GONE
         }
-        binding.shareButton.setOnClickListener{
-            context?.shareText(album.shareUrl)
-        }
     }
 
-    override fun onStart() {
-        super.onStart()
 
-
-    }
-
-    override fun initViewModel() {
-        super.initViewModel()
-
-    }
-
-    @Deprecated(
-        "Use show(manager, tag, album) instead",
-        ReplaceWith("show(manager, tag, album)"),
-        DeprecationLevel.ERROR
-    )
+    @Deprecated("Use show(manager: FragmentManager, tag: String?,playlist: Playlist)")
     override fun show(manager: FragmentManager, tag: String?) {
-        //super.show(manager, tag)
+        super.show(manager, tag)
     }
 
-    // dùng funtion thay cho hàm mặc định để set album
-    fun show(manager: FragmentManager, tag: String?,album : Album){
-        this.album= album
-        super.show(manager,tag)
+    fun show(manager: FragmentManager, tag: String?,playlist: Playlist) {
+        this.playlist = playlist
+        super.show(manager, tag)
     }
+
 }

@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.sf.musicapp.R
 
 
 // class base cho bottom sheet
@@ -24,6 +25,7 @@ abstract class BaseBottomSheetFragment<T: ViewBinding>: BottomSheetDialogFragmen
         savedInstanceState: Bundle?
     ): View? {
         _binding = getViewBinding()
+        _binding?.root?.setBackgroundColor(requireContext().getColor(R.color.app_background))
         return binding.root
     }
 
@@ -79,7 +81,7 @@ abstract class BaseBottomSheetFragment<T: ViewBinding>: BottomSheetDialogFragmen
     }
 
     override fun show(manager: FragmentManager, tag: String?) {
-        if (isAdded.not()){
+        if (isAdded.not()) {
             super.show(manager, tag)
         }
     }

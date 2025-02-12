@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".view.fragment.ArtistPickerFragment">
+
+        <TextView
+            android:id="@+id/artist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:paddingStart="32dp"
+            android:text="Artist Name"
+            android:textAlignment="textEnd"
+            android:textSize="@dimen/title_size"
+            android:layout_marginTop="@dimen/padding_top_app"
+            android:layout_marginEnd="@dimen/padding_end_app"
+            android:layout_marginStart="@dimen/padding_end_app"/>
+
+        <TextView
+            android:id="@+id/join_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1-12-2002"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/artist_name"
+            app:layout_constraintEnd_toEndOf="@id/artist_name" />
+
+
+        <LinearLayout
+            android:id="@+id/options"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/join_date"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="@dimen/padding_end_app"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/save_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.IconButton"
+                app:icon="@drawable/bookmark_selector"
+                app:iconTint="@color/white"
+                android:checkable="true"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/share_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.IconButton"
+                app:icon="@drawable/share_social"
+                app:iconTint="@color/white"/>
+
+        </LinearLayout>
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardImage"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintTop_toBottomOf="@id/options"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="80dp"
+            android:layout_marginEnd="80dp"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="200dp">
+
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
+        </androidx.cardview.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/cardImage"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:paddingBottom="24dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="24dp">
+
+                <TextView
+                    android:id="@+id/songs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Songs"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+                <TextView
+                    android:id="@+id/tracks_view_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="view all"
+                    android:paddingEnd="2dp"
+                    android:textStyle="italic"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/play_button"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:visibility="invisible"/>
+
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/play_button"
+                    style = "@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:icon="@drawable/play"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:iconTint="@color/white"
+                    android:layout_marginEnd="16dp"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/track_recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:nestedScrollingEnabled="false"/>
+
+            <TextView
+                android:id="@+id/no_track"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="This artist has no track"
+                android:textSize="20sp"
+                android:layout_marginStart="40dp"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/albums"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Albums"
+                android:textSize="20sp"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="24dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="32dp"
+                android:id="@+id/album_recyclerView"
+                android:nestedScrollingEnabled="false"/>
+
+            <TextView
+                android:id="@+id/no_album"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="This artist has no album"
+                android:textSize="20sp"
+                android:layout_marginStart="40dp"
+                android:visibility="invisible"/>
+
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

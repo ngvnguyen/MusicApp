@@ -55,11 +55,11 @@ abstract class BasePagingAdapter<T:Any>(
         )
     }
 
-    class PlaceholderViewHolder(
+    private class PlaceholderViewHolder(
         private val binding: ViewBinding
     ): RecyclerView.ViewHolder(binding.root)
 
-    class DataViewHolder(
+    private class DataViewHolder(
         val binding: ViewBinding
     ): RecyclerView.ViewHolder(binding.root)
 

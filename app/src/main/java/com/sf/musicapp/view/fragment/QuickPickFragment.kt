@@ -2,14 +2,13 @@ package com.sf.musicapp.view.fragment
 
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.sf.musicapp.adapter.AlbumItemAdapter
-import com.sf.musicapp.adapter.ArtistItemAdapter
-import com.sf.musicapp.adapter.PlaylistItemAdapter
-import com.sf.musicapp.adapter.SmallItemAdapter
+import com.sf.musicapp.adapter.paging.AlbumItemAdapter
+import com.sf.musicapp.adapter.paging.ArtistItemAdapter
+import com.sf.musicapp.adapter.paging.PlaylistItemAdapter
+import com.sf.musicapp.adapter.paging.SmallItemAdapter
 import com.sf.musicapp.databinding.FragmentQuickPickBinding
 import com.sf.musicapp.utils.PlayerHelper
 import com.sf.musicapp.view.activity.MainActivity
@@ -44,8 +43,7 @@ class QuickPickFragment() : BaseFragment<FragmentQuickPickBinding>(){
         //quick pick
         val smallItemAdapter = SmallItemAdapter{track->
             playerHelper.playNewTrack(track)
-            playMusicBottomFragment.show(parentFragmentManager, "play music",
-                PlayMusicBottomFragment.NEW_PLAY)
+            playMusicBottomFragment.show(parentFragmentManager,playMusicBottomFragment.tag)
         }
         binding.suggestRecyclerView.adapter = smallItemAdapter
         binding.suggestRecyclerView.layoutManager = GridLayoutManager(requireActivity(),4, RecyclerView.HORIZONTAL,false)
@@ -59,7 +57,6 @@ class QuickPickFragment() : BaseFragment<FragmentQuickPickBinding>(){
         //album
         val albumPickerFragment = AlbumPickerFragment()
         val albumItemAdapter = AlbumItemAdapter(){
-
             albumPickerFragment.show(parentFragmentManager,albumPickerFragment.tag,it)
         }
         binding.relatedAlbumsRecyclerView.adapter = albumItemAdapter
@@ -72,7 +69,10 @@ class QuickPickFragment() : BaseFragment<FragmentQuickPickBinding>(){
         }
 
         //artist
-        val artistItemAdapter = ArtistItemAdapter()
+        val artistPickerFragment = ArtistPickerFragment()
+        val artistItemAdapter = ArtistItemAdapter(){
+            artistPickerFragment.show(parentFragmentManager,artistPickerFragment.tag,it)
+        }
         lifecycleScope.launch{
             viewModel.artistRecommendedPager.collectLatest {
                 artistItemAdapter.submitData(it)
@@ -84,7 +84,10 @@ class QuickPickFragment() : BaseFragment<FragmentQuickPickBinding>(){
             LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL,false)
 
         //playlist
-        val playlistItemAdapter = PlaylistItemAdapter()
+        val playlistPickerFragment = PlaylistPickerFragment()
+        val playlistItemAdapter = PlaylistItemAdapter(){
+            playlistPickerFragment.show(parentFragmentManager,playlistPickerFragment.tag,it)
+        }
         binding.mayLikesRecyclerView.adapter = playlistItemAdapter
         binding.mayLikesRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL,false)

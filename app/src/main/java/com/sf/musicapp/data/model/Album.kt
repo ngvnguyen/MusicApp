@@ -6,5 +6,6 @@ data class Album(
     val releaseDate:String,
     val artistId:String,
     val artistName:String,
-    val image:String
+    val image:String,
+    val shareUrl:String
 )

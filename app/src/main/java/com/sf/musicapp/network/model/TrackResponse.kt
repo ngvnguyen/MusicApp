@@ -41,5 +41,6 @@ fun TrackMetadata.toTrack() = Track(
     releaseDate = releaseDate,
     albumImage = albumImage,
     audioDownload = audioDownload,
-    allowDownload = allowDownload
+    allowDownload = allowDownload,
+    image = image
 )

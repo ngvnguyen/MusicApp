@@ -1,12 +1,10 @@
-package com.sf.musicapp.adapter
+package com.sf.musicapp.adapter.paging
 
 import com.sf.musicapp.R
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.sf.musicapp.adapter.base.BaseAdapter
 import com.sf.musicapp.adapter.base.BasePagingAdapter
 import com.sf.musicapp.data.model.Album
 import com.sf.musicapp.databinding.ItemAlbumLayoutBinding

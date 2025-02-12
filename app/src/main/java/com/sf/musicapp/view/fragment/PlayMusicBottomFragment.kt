@@ -27,6 +27,7 @@ import com.sf.musicapp.R
 import com.sf.musicapp.data.model.Track
 import com.sf.musicapp.service.MusicService
 import com.sf.musicapp.utils.PlayerHelper
+import com.sf.musicapp.utils.loadImg
 import com.sf.musicapp.utils.toDuration
 import com.sf.musicapp.view.activity.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -65,8 +66,7 @@ class PlayMusicBottomFragment(
 
     override fun initView() {
         super.initView()
-        val playerView = binding.playerView
-        playerView.player = playerHelper.player
+        playerHelper.updateRepeatMode(requireActivity())
 
         lifecycleScope.launch{
 
@@ -96,7 +96,7 @@ class PlayMusicBottomFragment(
             ) {}
             override fun onStartTrackingTouch(p0: SeekBar?) {}
             override fun onStopTrackingTouch(p0: SeekBar?) {
-                p0?.let { playerHelper.seekTo(it.progress.toLong())}
+                p0?.let { playerHelper.seekToMs(it.progress.toLong())}
             }
         })
 
@@ -105,7 +105,10 @@ class PlayMusicBottomFragment(
     override fun addEvent() {
         super.addEvent()
         binding.playButton.setOnClickListener{
-            if (playerHelper.isPlaying.value){
+            if (playerHelper.isEnded.value){
+                playerHelper.replay()
+            }
+            else if (playerHelper.isPlaying.value){
                 playerHelper.pause()
             }else{
                 playerHelper.resume()
@@ -122,7 +125,14 @@ class PlayMusicBottomFragment(
         binding.previousButton.setOnClickListener{
             if (playerHelper.canSeekToPreviousTrack()) playerHelper.seekToPreviousTrack()
         }
+        binding.repeatModeButton.setOnClickListener{
+            playerHelper.changeRepeatMode(requireActivity())
+        }
 
+        val playlistQueueFragment = PlaylistQueueFragment()
+        binding.playlist.setOnClickListener{
+            playlistQueueFragment.show(parentFragmentManager,playlistQueueFragment.tag)
+        }
     }
 
     override fun addObservers() {
@@ -135,7 +145,8 @@ class PlayMusicBottomFragment(
                     if (isPlaying){
                         binding.playButton.setIconResource(R.drawable.pause)
                     }else{
-                        binding.playButton.setIconResource(R.drawable.play)
+                        if(playerHelper.isEnded.value.not())
+                            binding.playButton.setIconResource(R.drawable.play)
                     }
                 }
             }
@@ -144,6 +155,25 @@ class PlayMusicBottomFragment(
                     track?.let{
                         binding.artist.text = it.artistName
                         binding.title.text = it.name
+                        binding.playerView.loadImg(it.image)
+                    }
+                }
+            }
+            launch{
+                playerHelper.isEnded.collectLatest {
+                    if (it){
+                        binding.playButton.setIconResource(R.drawable.replay)
+                    }
+                }
+            }
+
+            launch{
+                playerHelper.currentRepeatMode.collectLatest {
+                    when(it){
+                        PlayerHelper.RepeatMode.OFF -> binding.repeatModeButton.setIconResource(R.drawable.close)
+                        PlayerHelper.RepeatMode.ONE -> binding.repeatModeButton.setIconResource(R.drawable.repeate_one)
+                        PlayerHelper.RepeatMode.ALL -> binding.repeatModeButton.setIconResource(R.drawable.repeat_all)
+                        PlayerHelper.RepeatMode.SHUFFLE -> binding.repeatModeButton.setIconResource(R.drawable.shuffle)
                     }
                 }
             }

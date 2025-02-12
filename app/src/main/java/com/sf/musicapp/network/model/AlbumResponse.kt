@@ -31,5 +31,6 @@ fun AlbumMetadata.toAlbum()=
         releaseDate = releaseDate,
         artistId = artistId,
         artistName = artistName,
-        image = image
+        image = image,
+        shareUrl = shareUrl
     )

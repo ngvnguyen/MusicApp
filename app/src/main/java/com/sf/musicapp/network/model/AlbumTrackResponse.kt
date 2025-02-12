@@ -1,6 +1,7 @@
 package com.sf.musicapp.network.model
 
 import com.sf.musicapp.data.model.Track
+import com.sf.musicapp.utils.Jamendo
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -41,14 +42,15 @@ fun AlbumTrackResult.toListTrack():List<Track>{
         val track = Track(
             id = t.id,
             name = t.name,
-            artistName = this.artistName,
+            artistName = artistName,
             duration = t.duration.toInt(),
-            artistId = this.artistId,
-            albumId = this.id,
-            releaseDate = this.releaseDate,
-            albumImage = this.image,
+            artistId = artistId,
+            albumId = id,
+            releaseDate = releaseDate,
+            albumImage = image,
             audioDownload = t.audioDownload,
-            allowDownload = t.audioDownloadAllowed
+            allowDownload = t.audioDownloadAllowed,
+            image = Jamendo.getTrackImageUrl(t.id,id)
         )
         result.add(track)
     }

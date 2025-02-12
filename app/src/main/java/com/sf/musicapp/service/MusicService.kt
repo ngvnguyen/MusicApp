@@ -36,8 +36,6 @@ import javax.inject.Inject
 class MusicService: MediaSessionService() {
     @Inject
     lateinit var player: ExoPlayer
-    @Inject
-    lateinit var trackRepository: TrackRepository
 
     private var mediaSession: MediaSession?=null
 
@@ -64,7 +62,7 @@ class MusicService: MediaSessionService() {
     private fun createNotificationChannel(){
         val channel = NotificationChannel(
             "MEDIA_PLAYER",
-            "Phat Nhac",
+            "Music Player",
             NotificationManager.IMPORTANCE_DEFAULT
         )
         val manager = getSystemService(NotificationManager::class.java)

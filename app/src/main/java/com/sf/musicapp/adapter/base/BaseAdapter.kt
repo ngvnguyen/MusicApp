@@ -4,18 +4,21 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.sf.musicapp.adapter.base.BasePagingAdapter.DataViewHolder
 
-abstract class BaseAdapter<T: ViewBinding,PH:ViewBinding,DATA>(
-    private val dataHolderInflater:(LayoutInflater, ViewGroup?,Boolean)->T,
-    private val placeHolderInflater:(LayoutInflater, ViewGroup?, Boolean)->PH
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+abstract class BaseAdapter<T>()
+    : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    val data = mutableListOf<DATA>()
-    private var isLoading = true
+    val data = mutableListOf<T>()
+    companion object{
+        const val VIEW_TYPE_DATA = 1
+        const val VIEW_TYPE_PLACEHOLDER = 0
+    }
+    private var viewType = VIEW_TYPE_PLACEHOLDER
 
-    fun setData(data: List<DATA>){
+    fun setData(data: List<T>){
         this.data.addAll(data)
-        isLoading = false
+        viewType = VIEW_TYPE_DATA
         notifyDataSetChanged()
     }
 
@@ -24,31 +27,36 @@ abstract class BaseAdapter<T: ViewBinding,PH:ViewBinding,DATA>(
         viewType: Int
     ): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return if (isLoading) LoadingViewHolder(
-            placeHolderInflater(layoutInflater,parent,false)
-        ) else LoadedViewHolder(
-            dataHolderInflater(layoutInflater,parent,false)
+        return if (viewType == VIEW_TYPE_PLACEHOLDER) PlaceHolderViewHolder(
+            getPlaceholderViewBinding(layoutInflater,parent)
+        ) else DataViewHolder(
+            getDataViewBinding(layoutInflater,parent)
         )
     }
 
-//    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-//        if (holder is BaseAdapter<T, PH, DATA>.LoadedViewHolder)
-//            bind(holder.binding,position)
-//    }
-//
-//    abstract fun bind(binding:T,position: Int)
+    abstract fun getDataViewBinding(layoutInflater: LayoutInflater,parent: ViewGroup): ViewBinding
+    abstract fun getPlaceholderViewBinding(layoutInflater: LayoutInflater,parent: ViewGroup): ViewBinding
 
+    abstract fun bindData(binding: ViewBinding,data:T)
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is DataViewHolder) bindData(holder.binding,data[position])
+    }
     override fun getItemCount(): Int {
-        return if (isLoading) 8 else data.size
+        return if (viewType== VIEW_TYPE_PLACEHOLDER) 8 else data.size
     }
 
-    inner class LoadingViewHolder(
-        private val binding: PH
+    override fun getItemViewType(position: Int): Int {
+        return viewType
+    }
+
+    private class PlaceHolderViewHolder(
+        private val binding: ViewBinding
     ): RecyclerView.ViewHolder(binding.root){
 
     }
-    inner class LoadedViewHolder(
-        val binding: T
+    private class DataViewHolder(
+        val binding: ViewBinding
     ): RecyclerView.ViewHolder(binding.root){
 
     }

@@ -17,12 +17,12 @@
         android:layout_marginEnd="40dp"
         app:cardCornerRadius="8dp">
 
-        <androidx.media3.ui.PlayerView
+        <ImageView
+            android:id="@id/player_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/player_view"
-            app:use_controller="false"
-            app:resize_mode="zoom" />
+            android:scaleType="fitXY"/>
+
     </androidx.cardview.widget.CardView>
 
     <TextView
@@ -133,13 +133,25 @@
             app:icon="@drawable/shuffle"
             app:iconSize="@dimen/icon_control_size"
             app:iconTint="@color/white"
-            android:id="@+id/shuffle_mode_button"
+            android:id="@+id/repeat_mode_button"
             android:gravity="center"
             android:layout_marginStart="8dp" />
 
 
     </LinearLayout>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/playlist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style = "@style/Widget.Material3.Button.IconButton"
+        app:icon="@drawable/playlist"
+        app:iconTint="@color/white"
+        app:iconGravity="textStart"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 
 

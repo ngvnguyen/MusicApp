@@ -1,6 +1,10 @@
 package com.sf.musicapp.module
 
 import android.content.Context
+import android.telephony.PhoneStateListener
+import android.telephony.TelephonyCallback
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
 import androidx.media3.exoplayer.ExoPlayer
 import com.sf.musicapp.network.repository.AlbumRepository
 import com.sf.musicapp.network.repository.ArtistRepository
@@ -31,8 +35,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun getPlayer(@ApplicationContext context: Context) : ExoPlayer
-        = ExoPlayer.Builder(context).build()
+    fun getPlayer(@ApplicationContext context: Context) : ExoPlayer =
+        ExoPlayer.Builder(context)
+            .setHandleAudioBecomingNoisy(true)
+            .setAudioAttributes(AudioAttributes.Builder()
+                .setUsage(C.USAGE_MEDIA)
+                .build(),true)
+            .build()
+
 
     @Provides
     @Singleton

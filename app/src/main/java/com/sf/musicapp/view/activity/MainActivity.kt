@@ -21,10 +21,10 @@ import com.sf.musicapp.view.base.BaseActivity
 import com.sf.musicapp.R
 import com.sf.musicapp.service.MusicService
 import com.sf.musicapp.utils.PlayerHelper
+import com.sf.musicapp.utils.loadImg
 import com.sf.musicapp.view.activity.viewmodel.AppViewModel
 import com.sf.musicapp.view.fragment.AlbumPickerFragment
 import com.sf.musicapp.view.fragment.PlayMusicBottomFragment
-import com.sf.musicapp.view.fragment.viewmodel.AlbumPickerViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -40,7 +40,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     // WARNING: khởi tạo viewModel, ở các fragment có sử dụng nên xóa dòng này sẽ gây lỗi
     private val viewModel: AppViewModel by viewModels()
-    private val albumPickerViewModel: AlbumPickerViewModel by viewModels()
 
     private lateinit var mediaController: MediaController
     private lateinit var controllerFuture: ListenableFuture<MediaController>
@@ -69,8 +68,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 binding.fragmentContainerView.id
             ) as NavHostFragment).navController
 
-        binding.playerView.player = playerHelper.player
-
 
         playMusicBottomFragment = PlayMusicBottomFragment{
             if (binding.musicBar.visibility == View.GONE){
@@ -86,7 +83,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             expandEvent()
         }
         binding.musicBar.setOnClickListener{
-            playMusicBottomFragment.show(supportFragmentManager,"play music")
+            playMusicBottomFragment.show(supportFragmentManager,playMusicBottomFragment.tag)
         }
         binding.playButton.setOnClickListener{
             if (playerHelper.isPlaying.value) playerHelper.pause()
@@ -105,15 +102,26 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                     if (isPlaying){
                         binding.playButton.setIconResource(R.drawable.pause)
                     }else{
-                        binding.playButton.setIconResource(R.drawable.play)
+                        if(playerHelper.isEnded.value.not())
+                            binding.playButton.setIconResource(R.drawable.play)
                     }
                 }
             }
             launch{
                 playerHelper.currentTrack.collectLatest { track->
-                    if (track!=null) {
-                        binding.artist.text = track.artistName
-                        binding.title.text = track.name
+                    track?.let {
+                        with(it){
+                            binding.artist.text = artistName
+                            binding.title.text = name
+                            binding.playerView.loadImg(image)
+                        }
+                    }
+                }
+            }
+            launch{
+                playerHelper.isEnded.collectLatest {
+                    if (it){
+                        binding.playButton.setIconResource(R.drawable.replay)
                     }
                 }
             }

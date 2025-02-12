@@ -10,5 +10,6 @@ data class Track(
     val releaseDate:String,
     val albumImage:String,
     val audioDownload:String,
-    val allowDownload:Boolean
+    val allowDownload:Boolean,
+    val image:String
 )

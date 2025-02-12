@@ -1,7 +1,9 @@
 package com.sf.musicapp.network.api
 
 import com.sf.musicapp.network.model.AlbumResponse
+import com.sf.musicapp.network.model.AlbumTrackResponse
 import com.sf.musicapp.network.model.PlaylistResponse
+import com.sf.musicapp.network.model.PlaylistTrackResponse
 import com.sf.musicapp.utils.Jamendo
 import com.sf.musicapp.utils.Limits
 import retrofit2.http.GET
@@ -31,4 +33,20 @@ interface PlaylistApi {
         @Query("client_id") clientId:String = Jamendo.CLIENT_ID,
         @Query("format") format:String = Jamendo.JSON
     ): PlaylistResponse
+
+    @GET("/v3.0/playlists/tracks")
+    suspend fun getTrackByPlaylistId(
+        @Query("id") id:String,
+        @Query("offset") offset:Int=0,
+        @Query("limit") limit:Int = Limits.PAGE_SIZE,
+        @Query("client_id") clientId:String = Jamendo.CLIENT_ID,
+        @Query("format") format:String = Jamendo.JSON
+    ): PlaylistTrackResponse
+
+    @GET("/v3.0/playlists/tracks")
+    suspend fun getAllTrackByPlaylistId(
+        @Query("id") id:String,
+        @Query("client_id") clientId:String = Jamendo.CLIENT_ID,
+        @Query("format") format:String = Jamendo.JSON
+    ): PlaylistTrackResponse
 }
