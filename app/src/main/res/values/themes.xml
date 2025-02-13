@@ -4,7 +4,15 @@
         <item name="android:windowBackground">@color/app_background</item>
         <item name="fontFamily">@font/poppins_w300</item>
         <item name="android:textColor">@color/white</item>
+
     </style>
 
     <style name="Theme.MusicApp" parent="Base.Theme.MusicApp" />
+
+    <style name="Theme.MusicApp.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/app_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/app_icon_splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.MusicApp</item>
+        <item name="windowSplashScreenAnimationDuration">1000</item>
+    </style>
 </resources>
