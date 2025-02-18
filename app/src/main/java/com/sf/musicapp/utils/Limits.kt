@@ -7,6 +7,8 @@ object Limits {
     const val PLAYLIST_CHAR_LIMIT = 11
     const val PAGE_SIZE = 15
 
+    const val ITEM_SEARCH = 20
+
     const val MAX_ITEM = 8
 }
 

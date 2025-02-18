@@ -11,7 +11,7 @@ class TrackRepositoryImpl(private val trackApi: TrackApi): TrackRepository {
         query: String,
         page: Int
     ): List<Track> {
-        return trackApi.searchTrack(query, offset = page* Limits.PAGE_SIZE).results.map { it->it.toTrack() }
+        return trackApi.searchTrack(query, offset = page* Limits.ITEM_SEARCH).results.map { it->it.toTrack() }
     }
 
     override suspend fun getRecommendedTrack(page: Int): List<Track> {

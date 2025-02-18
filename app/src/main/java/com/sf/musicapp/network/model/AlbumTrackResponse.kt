@@ -1,5 +1,6 @@
 package com.sf.musicapp.network.model
 
+import com.sf.musicapp.data.converter.DateConverter
 import com.sf.musicapp.data.model.Track
 import com.sf.musicapp.utils.Jamendo
 import kotlinx.serialization.SerialName
@@ -46,7 +47,7 @@ fun AlbumTrackResult.toListTrack():List<Track>{
             duration = t.duration.toInt(),
             artistId = artistId,
             albumId = id,
-            releaseDate = releaseDate,
+            releaseDate = DateConverter.fromString(releaseDate),
             albumImage = image,
             audioDownload = t.audioDownload,
             allowDownload = t.audioDownloadAllowed,

@@ -4,4 +4,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="app_background">#16171C</color>
     <color name="not_select">#7E7E7E</color>
+    <color name="pink">#E61978</color>
+    <color name="grey">#1F2128</color>
 </resources>

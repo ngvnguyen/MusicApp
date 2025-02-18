@@ -19,7 +19,7 @@ class PlaylistRepositoryImpl(private val playlistApi: PlaylistApi): PlaylistRepo
         query: String,
         page: Int
     ): List<Playlist> {
-        return playlistApi.searchPlaylists(query,page* Limits.PAGE_SIZE).results
+        return playlistApi.searchPlaylists(query,page* Limits.ITEM_SEARCH).results
             .map { it.toPlaylist() }
     }
 

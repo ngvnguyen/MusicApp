@@ -10,6 +10,7 @@ import com.sf.musicapp.databinding.ItemArtistShimmerLayoutBinding
 import com.sf.musicapp.utils.loadImg
 import com.sf.musicapp.R
 import com.sf.musicapp.adapter.base.BasePagingAdapter
+import com.sf.musicapp.data.converter.DateConverter
 import com.sf.musicapp.utils.Limits
 import com.sf.musicapp.utils.truncate
 
@@ -38,7 +39,7 @@ class ArtistItemAdapter(
     ) {
         if (binding is ItemArtistLayoutBinding){
             binding.artist.text = data.name.truncate(Limits.ARTIST_CHAR_LIMIT)
-            binding.subscribe.text = data.joinDate.toString()
+            binding.subscribe.text = DateConverter.fromDate(data.joinDate)
             if(data.imageUrl.isNotEmpty())
                 binding.img.loadImg(data.imageUrl,R.drawable.person)
 

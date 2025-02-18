@@ -18,7 +18,7 @@ class ArtistRepositoryImpl(private val artistApi: ArtistApi): ArtistRepository {
     }
 
     override suspend fun searchArtist(query: String,page:Int): List<Artist> {
-        return artistApi.searchArtist(query=query, offset = Limits.PAGE_SIZE)
+        return artistApi.searchArtist(query=query, offset = Limits.ITEM_SEARCH)
             .results.map { it->it.toArtist() }
     }
 

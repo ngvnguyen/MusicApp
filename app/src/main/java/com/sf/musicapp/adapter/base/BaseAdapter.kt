@@ -17,6 +17,7 @@ abstract class BaseAdapter<T>()
     private var viewType = VIEW_TYPE_PLACEHOLDER
 
     fun setData(data: List<T>){
+        this.data.clear()
         this.data.addAll(data)
         viewType = VIEW_TYPE_DATA
         notifyDataSetChanged()

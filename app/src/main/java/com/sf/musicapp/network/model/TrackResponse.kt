@@ -1,5 +1,6 @@
 package com.sf.musicapp.network.model
 
+import com.sf.musicapp.data.converter.DateConverter
 import com.sf.musicapp.data.model.Track
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -38,7 +39,7 @@ fun TrackMetadata.toTrack() = Track(
     duration = duration,
     artistId = artistId,
     albumId = albumId,
-    releaseDate = releaseDate,
+    releaseDate = DateConverter.fromString(releaseDate),
     albumImage = albumImage,
     audioDownload = audioDownload,
     allowDownload = allowDownload,

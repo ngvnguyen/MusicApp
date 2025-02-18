@@ -1,5 +1,6 @@
 package com.sf.musicapp.network.model
 
+import com.sf.musicapp.data.converter.DateConverter
 import com.sf.musicapp.data.model.Album
 import com.sf.musicapp.utils.Jamendo
 import kotlinx.serialization.SerialName
@@ -36,7 +37,7 @@ fun ArtistAlbumResult.toListAlbum(): List<Album> {
         val album = Album(
             id = it.id,
             name = it.name,
-            releaseDate = it.releaseDate,
+            releaseDate = DateConverter.fromString(it.releaseDate),
             artistId = id,
             artistName = name,
             image = it.image,

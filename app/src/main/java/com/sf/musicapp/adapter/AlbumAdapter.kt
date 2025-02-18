@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
 import com.sf.musicapp.R
 import com.sf.musicapp.adapter.base.BaseAdapter
+import com.sf.musicapp.data.converter.DateConverter
 import com.sf.musicapp.data.model.Album
 import com.sf.musicapp.data.model.Track
 import com.sf.musicapp.databinding.ItemAlbumLayoutBinding
@@ -38,7 +39,7 @@ class AlbumAdapter(
         data: Album
     ) {
         if (binding is ItemSmallLayoutBinding){
-            binding.itemAuthor.text = data.releaseDate //
+            binding.itemAuthor.text = DateConverter.fromDate(data.releaseDate)
             binding.itemTitle.text = data.name
             binding.itemImg.loadImg(data.image,R.drawable.server)
             binding.root.setOnClickListener{

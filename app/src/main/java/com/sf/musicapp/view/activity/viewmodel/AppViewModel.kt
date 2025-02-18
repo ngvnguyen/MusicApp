@@ -107,4 +107,14 @@ class AppViewModel @Inject constructor(
         }
     }
 
+    suspend fun searchTrack(query:String,page:Int): List<Track>{
+        try{
+            val result = trackRepository.searchTrack(query,page)
+            return result
+        }catch (e: Exception){
+            Log.d("AlbumPickerViewModel",e.message.toString())
+            return listOf()
+        }
+    }
+
 }

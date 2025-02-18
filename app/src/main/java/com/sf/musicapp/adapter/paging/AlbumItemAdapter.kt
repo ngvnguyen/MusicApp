@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewbinding.ViewBinding
 import com.sf.musicapp.adapter.base.BasePagingAdapter
+import com.sf.musicapp.data.converter.DateConverter
 import com.sf.musicapp.data.model.Album
 import com.sf.musicapp.databinding.ItemAlbumLayoutBinding
 import com.sf.musicapp.databinding.ItemAlbumShimmerLayoutBinding
@@ -39,7 +40,7 @@ class AlbumItemAdapter(
                 onItemClick(data)
             }
             binding.title.text = data.name.truncate(Limits.ALBUM_CHAR_LIMIT)
-            binding.date.text = data.releaseDate.truncate(Limits.ALBUM_CHAR_LIMIT)
+            binding.date.text = DateConverter.fromDate(data.releaseDate)
             binding.img.loadImg(data.image,R.drawable.playlist)
         }
     }

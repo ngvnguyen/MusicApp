@@ -1,5 +1,6 @@
 package com.sf.musicapp.network.model
 
+import com.sf.musicapp.data.converter.DateConverter
 import com.sf.musicapp.data.model.Artist
 import com.sf.musicapp.utils.Limits
 import com.sf.musicapp.utils.truncate
@@ -26,6 +27,6 @@ fun ArtistMetadata.toArtist() =
     Artist(
         id,
         name,
-        joinDate,
+        DateConverter.fromString(joinDate),
         image
     )

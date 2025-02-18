@@ -13,6 +13,7 @@ import com.sf.musicapp.R
 import com.sf.musicapp.adapter.AlbumAdapter
 import com.sf.musicapp.adapter.ItemAdapter
 import com.sf.musicapp.adapter.paging.SmallItemAdapter
+import com.sf.musicapp.data.converter.DateConverter
 import com.sf.musicapp.data.model.Album
 import com.sf.musicapp.data.model.Artist
 import com.sf.musicapp.data.model.Track
@@ -52,7 +53,7 @@ class ArtistPickerFragment : BaseBottomSheetFragment<FragmentArtistPickerBinding
         super.initView()
         playMusicBottomFragment = (requireActivity() as MainActivity).playMusicBottomFragment
         binding.artistName.text = artist.name
-        binding.joinDate.text = artist.joinDate
+        binding.joinDate.text = DateConverter.fromDate(artist.joinDate)
         //
         binding.image.loadImg(artist.imageUrl,R.drawable.sync)
         trackAdapter = ItemAdapter{

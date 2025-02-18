@@ -1,5 +1,6 @@
 package com.sf.musicapp.network.model
 
+import com.sf.musicapp.data.converter.DateConverter
 import com.sf.musicapp.data.model.Album
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -28,7 +29,7 @@ fun AlbumMetadata.toAlbum()=
     Album(
         id = id,
         name = name,
-        releaseDate = releaseDate,
+        releaseDate = DateConverter.fromString(releaseDate),
         artistId = artistId,
         artistName = artistName,
         image = image,

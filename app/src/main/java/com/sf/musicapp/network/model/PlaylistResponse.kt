@@ -1,5 +1,6 @@
 package com.sf.musicapp.network.model
 
+import com.sf.musicapp.data.converter.DateConverter
 import com.sf.musicapp.data.model.Playlist
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -26,7 +27,7 @@ fun PlaylistMetadata.toPlaylist()=
     Playlist(
         id=id,
         name = name,
-        creationDate = creationDate,
+        creationDate = DateConverter.fromString(creationDate),
         userId = userId,
         userName = userName
     )

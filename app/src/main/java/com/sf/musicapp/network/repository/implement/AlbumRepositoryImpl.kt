@@ -15,7 +15,7 @@ class AlbumRepositoryImpl(private val albumApi: AlbumApi): AlbumRepository {
     }
 
     override suspend fun searchAlbums(query: String,page:Int): List<Album> {
-        return albumApi.searchAlbums(query,page* Limits.PAGE_SIZE).results
+        return albumApi.searchAlbums(query,page* Limits.ITEM_SEARCH).results
             .map { it.toAlbum() }
     }
 

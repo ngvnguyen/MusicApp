@@ -62,6 +62,14 @@ dependencies {
 
     implementation("androidx.core:core-splashscreen:1.0.1")
 
+    val roomVersion = "2.6.1"
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion") // Dành cho Kotlin với KSP
+
+    // Room với Coroutines
+    implementation("androidx.room:room-ktx:$roomVersion")
+
 
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
