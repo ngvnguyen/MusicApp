@@ -12,6 +12,7 @@ interface DatabaseRepository {
     fun getTracksOrderByName(asc:Boolean): Flow<List<Track>>
     fun getTracksOrderByDate(asc:Boolean): Flow<List<Track>>
     fun countTrackById(id: String): Flow<Int>
+    fun checkTrackExists(id: String): Flow<Boolean>
 
     suspend fun insertTrack(track: Track)
     suspend fun deleteTrackById(id:String)
@@ -21,6 +22,7 @@ interface DatabaseRepository {
     fun getAlbumsOrderByName(asc:Boolean): Flow<List<Album>>
     fun getAlbumsOrderByDate(asc:Boolean): Flow<List<Album>>
     fun countAlbumById(id: String): Flow<Int>
+    fun checkAlbumExists(id: String): Flow<Boolean>
 
     suspend fun insertAlbum(album: Album)
     suspend fun deleteAlbumById(id:String)
@@ -30,6 +32,7 @@ interface DatabaseRepository {
     fun getArtistOrderByName(asc:Boolean): Flow<List<Artist>>
     fun getArtistOrderByDate(asc:Boolean): Flow<List<Artist>>
     fun countArtistById(id: String): Flow<Int>
+    fun checkArtistExists(id: String): Flow<Boolean>
 
     suspend fun insertArtist(artist:Artist)
     suspend fun deleteArtist(id:String)
@@ -39,6 +42,7 @@ interface DatabaseRepository {
     fun getPlaylistsOrderByName(asc:Boolean): Flow<List<Playlist>>
     fun getPlaylistsOrderByDate(asc:Boolean): Flow<List<Playlist>>
     fun countPlaylistById(id: String): Flow<Int>
+    fun checkPlaylistExists(id: String): Flow<Boolean>
 
     suspend fun insertPlaylist(playlist: Playlist)
     suspend fun deletePlaylistById(id:String)

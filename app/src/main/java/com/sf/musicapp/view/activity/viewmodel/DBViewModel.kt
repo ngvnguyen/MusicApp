@@ -9,11 +9,13 @@ import com.sf.musicapp.data.model.Playlist
 import com.sf.musicapp.data.model.Track
 import com.sf.musicapp.data.repository.DatabaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -39,6 +41,46 @@ class DBViewModel @Inject constructor(
     private var albumScope:Job? = null
     private var artistScope:Job? = null
     private var playlistScope:Job? = null
+    private val trackId = MutableStateFlow("")
+    private val albumId = MutableStateFlow("")
+    private val artistId = MutableStateFlow("")
+    private val playlistId = MutableStateFlow("")
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val trackIsFavourite = trackId.flatMapLatest {
+        appDatabaseRepository.checkTrackExists(it)
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        false
+    )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val albumIsSaved = albumId.flatMapLatest {
+        appDatabaseRepository.checkAlbumExists(it)
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        false
+    )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val artistIsSaved = artistId.flatMapLatest {
+        appDatabaseRepository.checkArtistExists(it)
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        false
+    )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val playlistIsSaved = playlistId.flatMapLatest {
+        appDatabaseRepository.checkPlaylistExists(it)
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        false
+    )
 
     var tracks: StateFlow<List<Track>> = flowOf<List<Track>>().stateIn(
         viewModelScope,
@@ -60,17 +102,6 @@ class DBViewModel @Inject constructor(
         SharingStarted.Lazily,
         listOf())
 
-    private val _trackIsFavourite = MutableStateFlow<Boolean>(false)
-    val trackIsFavourite = _trackIsFavourite as StateFlow<Boolean>
-
-    private val _albumIsSaved = MutableStateFlow<Boolean>(false)
-    val albumIsSaved = _albumIsSaved as StateFlow<Boolean>
-
-    private val _artistIsSaved = MutableStateFlow<Boolean>(false)
-    val artistIsSaved = _artistIsSaved as StateFlow<Boolean>
-
-    private val _playlistIsSaved = MutableStateFlow<Boolean>(false)
-    val playlistIsSaved = _playlistIsSaved as StateFlow<Boolean>
 
     private val _sortState = MutableStateFlow<SortState>(
         SortState(SortType.NONE, SortOrder.DESC))
@@ -102,37 +133,17 @@ class DBViewModel @Inject constructor(
     }
 
     fun setTrackId(trackId:String){
-        trackScope?.cancel()
-        trackScope = viewModelScope.launch{
-            appDatabaseRepository.countTrackById(trackId).stateIn(viewModelScope).collectLatest {
-                _trackIsFavourite.value = it>0
-            }
-        }
+        this.trackId.value = trackId
     }
     fun setAlbumId(albumId:String){
-        albumScope?.cancel()
-        albumScope = viewModelScope.launch{
-            appDatabaseRepository.countAlbumById(albumId).stateIn(viewModelScope).collectLatest {
-                _albumIsSaved.value = it>0
-            }
-        }
+        this.albumId.value = albumId
     }
 
     fun setArtistId(artistId:String){
-        artistScope?.cancel()
-        artistScope = viewModelScope.launch{
-            appDatabaseRepository.countArtistById(artistId).stateIn(viewModelScope).collectLatest {
-                _artistIsSaved.value = it>0
-            }
-        }
+        this.artistId.value = artistId
     }
     fun setPlaylistId(playlistId:String){
-        playlistScope?.cancel()
-        playlistScope = viewModelScope.launch{
-            appDatabaseRepository.countPlaylistById(playlistId).stateIn(viewModelScope).collectLatest {
-                _playlistIsSaved.value = it>0
-            }
-        }
+        this.playlistId.value = playlistId
     }
 
     fun noSort(){

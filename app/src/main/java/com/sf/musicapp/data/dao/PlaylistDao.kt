@@ -52,4 +52,9 @@ interface PlaylistDao {
         SELECT COUNT(*) FROM playlist WHERE id=:id
     """)
     fun countPlaylistById(id:String):Flow<Int>
+
+    @Query("""
+        SELECT EXISTS(SELECT 1 FROM playlist WHERE id=:id)
+    """)
+    fun checkPlaylistExists(id:String):Flow<Boolean>
 }

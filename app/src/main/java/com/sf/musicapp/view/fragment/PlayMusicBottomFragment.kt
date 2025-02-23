@@ -2,12 +2,14 @@ package com.sf.musicapp.view.fragment
 
 import android.content.DialogInterface
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.sf.musicapp.databinding.FragmentPlayMusicBinding
 import com.sf.musicapp.view.base.BaseBottomSheetFragment
 import com.sf.musicapp.R
 import com.sf.musicapp.utils.PlayerHelper
+import com.sf.musicapp.utils.isNetworkAvailable
 import com.sf.musicapp.utils.loadImg
 import com.sf.musicapp.utils.toDuration
 import com.sf.musicapp.view.activity.viewmodel.DBViewModel
@@ -69,6 +71,9 @@ class PlayMusicBottomFragment(
                 p0?.let { playerHelper.seekToMs(it.progress.toLong())}
             }
         })
+
+        if (requireContext().isNetworkAvailable())
+            Toast.makeText(requireContext(),"Network unavailable", Toast.LENGTH_SHORT).show()
 
     }
 

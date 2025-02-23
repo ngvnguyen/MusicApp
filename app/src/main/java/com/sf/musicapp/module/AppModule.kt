@@ -33,11 +33,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun getArtistRepository(): ArtistRepository
-        = ArtistRepositoryImpl(RetrofitInstance.artistApi)
-
-    @Provides
-    @Singleton
     fun getPlayer(@ApplicationContext context: Context) : ExoPlayer =
         ExoPlayer.Builder(context)
             .setHandleAudioBecomingNoisy(true)
@@ -46,21 +41,29 @@ object AppModule {
                 .build(),true)
             .build()
 
+    @Provides
+    @Singleton
+    fun getRetrofitInstance(@ApplicationContext context: Context) = RetrofitInstance(context)
 
     @Provides
     @Singleton
-    fun getTrackRepository(): TrackRepository
-        = TrackRepositoryImpl(RetrofitInstance.trackApi)
+    fun getTrackRepository(retrofitInstance: RetrofitInstance): TrackRepository
+        = TrackRepositoryImpl(retrofitInstance.trackApi)
 
     @Provides
     @Singleton
-    fun getAlbumRepository(): AlbumRepository
-        = AlbumRepositoryImpl(RetrofitInstance.albumApi)
+    fun getAlbumRepository(retrofitInstance: RetrofitInstance): AlbumRepository
+        = AlbumRepositoryImpl(retrofitInstance.albumApi)
 
     @Provides
     @Singleton
-    fun getPlaylistRepository(): PlaylistRepository
-        = PlaylistRepositoryImpl(RetrofitInstance.playlistApi)
+    fun getArtistRepository(retrofitInstance: RetrofitInstance): ArtistRepository
+            = ArtistRepositoryImpl(retrofitInstance.artistApi)
+
+    @Provides
+    @Singleton
+    fun getPlaylistRepository(retrofitInstance: RetrofitInstance): PlaylistRepository
+        = PlaylistRepositoryImpl(retrofitInstance.playlistApi)
 
     @Provides
     @Singleton

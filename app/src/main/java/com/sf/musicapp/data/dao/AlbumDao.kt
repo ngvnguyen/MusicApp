@@ -51,4 +51,9 @@ interface AlbumDao {
         SELECT COUNT(*) FROM album WHERE id=:id
     """)
     fun countAlbumById(id:String):Flow<Int>
+
+    @Query("""
+        SELECT EXISTS(SELECT 1 FROM album WHERE id=:id)
+    """)
+    fun checkAlbumExists(id:String):Flow<Boolean>
 }

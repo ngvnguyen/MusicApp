@@ -33,6 +33,10 @@ class DatabaseRepositoryImpl(
         return trackDao.countTrackById(id)
     }
 
+    override fun checkTrackExists(id: String): Flow<Boolean> {
+        return trackDao.checkTrackExists(id)
+    }
+
     override suspend fun insertTrack(track: Track) {
         trackDao.insertTrack(track)
     }
@@ -57,6 +61,10 @@ class DatabaseRepositoryImpl(
 
     override fun countAlbumById(id: String): Flow<Int> {
         return albumDao.countAlbumById(id)
+    }
+
+    override fun checkAlbumExists(id: String): Flow<Boolean> {
+        return albumDao.checkAlbumExists(id)
     }
 
     override suspend fun insertAlbum(album: Album) {
@@ -86,6 +94,10 @@ class DatabaseRepositoryImpl(
         return artistDao.countArtistById(id)
     }
 
+    override fun checkArtistExists(id: String): Flow<Boolean> {
+        return artistDao.checkArtistExists(id)
+    }
+
     override suspend fun insertArtist(artist: Artist) {
         return artistDao.insertArtist(artist)
     }
@@ -110,6 +122,10 @@ class DatabaseRepositoryImpl(
 
     override fun countPlaylistById(id: String): Flow<Int> {
         return playlistDao.countPlaylistById(id)
+    }
+
+    override fun checkPlaylistExists(id: String): Flow<Boolean> {
+        return playlistDao.checkPlaylistExists(id)
     }
 
     override suspend fun insertPlaylist(playlist: Playlist) {

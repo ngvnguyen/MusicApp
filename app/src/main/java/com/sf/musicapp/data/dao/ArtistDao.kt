@@ -51,4 +51,9 @@ interface ArtistDao {
         SELECT COUNT(*) FROM artist WHERE id=:id
     """)
     fun countArtistById(id:String):Flow<Int>
+
+    @Query("""
+        SELECT EXISTS(SELECT 1 FROM artist WHERE id=:id)
+    """)
+    fun checkArtistExists(id:String):Flow<Boolean>
 }

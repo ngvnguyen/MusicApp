@@ -83,17 +83,12 @@ class MusicService: MediaSessionService() {
         player.pause()
     }
 
-    @OptIn(UnstableApi::class)
     override fun onDestroy() {
-        stopForeground(STOP_FOREGROUND_REMOVE)
-        stopSelf()
-        clearListener()
         mediaSession?.apply{
             release()
             mediaSession = null
             player.pause()
         }
-        player.release()
         super.onDestroy()
     }
 

@@ -55,4 +55,9 @@ interface TrackDao {
         SELECT COUNT(*) FROM track WHERE id=:id
     """)
     fun countTrackById(id:String):Flow<Int>
+
+    @Query("""
+        SELECT EXISTS(SELECT 1 FROM track WHERE id=:id)
+    """)
+    fun checkTrackExists(id:String):Flow<Boolean>
 }

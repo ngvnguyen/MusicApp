@@ -1,9 +1,11 @@
 package com.sf.musicapp.utils
 
+import android.app.Service
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.widget.Toast
 
@@ -27,4 +29,8 @@ fun Context.shareText(text:String){
         putExtra(Intent.EXTRA_TEXT,text)
     }
     startActivity(Intent.createChooser(i,"Share on"))
+}
+fun Context.isNetworkAvailable():Boolean{
+    val connectivityManager = getSystemService(Service.CONNECTIVITY_SERVICE) as ConnectivityManager
+    return connectivityManager.activeNetwork!= null
 }
