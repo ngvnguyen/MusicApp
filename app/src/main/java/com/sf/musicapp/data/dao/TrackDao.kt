@@ -51,4 +51,8 @@ interface TrackDao {
     """)
     fun searchTrackByName(query:String):Flow<List<Track>>
 
+    @Query("""
+        SELECT COUNT(*) FROM track WHERE id=:id
+    """)
+    fun countTrackById(id:String):Flow<Int>
 }

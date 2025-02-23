@@ -1,18 +1,14 @@
 package com.sf.musicapp.view.fragment
 
 import android.graphics.Color
-import android.view.KeyEvent
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.sf.musicapp.adapter.ItemAdapter
-import com.sf.musicapp.data.model.Track
 import com.sf.musicapp.databinding.FragmentSongBinding
 import com.sf.musicapp.utils.PlayerHelper
 import com.sf.musicapp.view.activity.MainActivity
@@ -22,6 +18,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.sf.musicapp.R
+import com.sf.musicapp.adapter.paging.TrackItemAdapter
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class SongFragment : BaseFragment<FragmentSongBinding>() {
@@ -31,9 +29,11 @@ class SongFragment : BaseFragment<FragmentSongBinding>() {
     @Inject
     lateinit var playerHelper: PlayerHelper
     private val appViewModel: AppViewModel by activityViewModels()
-    private var tracks = listOf<Track>()
-    private lateinit var adapter: ItemAdapter
+    private lateinit var adapter: TrackItemAdapter
     private lateinit var playMusicBottomFragment: PlayMusicBottomFragment
+    private lateinit var itemSavedFragment: TrackItemSavedFragment
+
+
 
     override fun getDataBinding(): FragmentSongBinding {
         return FragmentSongBinding.inflate(layoutInflater)
@@ -51,12 +51,14 @@ class SongFragment : BaseFragment<FragmentSongBinding>() {
         searchIcon.setColorFilter(Color.BLACK)
 
         playMusicBottomFragment = (requireActivity() as MainActivity).playMusicBottomFragment
-        adapter = ItemAdapter{
+        adapter = TrackItemAdapter{
             playerHelper.playNewTrack(it)
             playMusicBottomFragment.show(parentFragmentManager,playMusicBottomFragment.tag)
         }
         binding.songsRecyclerView.adapter = adapter
         binding.songsRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
+
+        itemSavedFragment = TrackItemSavedFragment()
     }
 
     override fun addEvent() {
@@ -64,23 +66,43 @@ class SongFragment : BaseFragment<FragmentSongBinding>() {
         binding.searchView.setOnClickListener{
             binding.searchView.isIconified = false
         }
-        searchEditText.setOnEditorActionListener {_,actionId,_->
-            if (actionId== EditorInfo.IME_ACTION_SEARCH){
-                val query = searchEditText.text.toString()
-                if (query.isNotEmpty()){
-                    lifecycleScope.launch{
-                        tracks= appViewModel.searchTrack(query,1)
-                        if (tracks.isNotEmpty()){
-                            binding.favouriteButton.visibility = View.GONE
-                            binding.favouriteText.visibility = View.GONE
-                            adapter.setData(tracks)
-                            binding.songsRecyclerView.visibility = View.VISIBLE
-                        }
-                    }
+        binding.searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String): Boolean {
+                if (query.length > 1){
+                    appViewModel.search(query)
+                    binding.favouriteButton.visibility = View.GONE
+                    binding.favouriteText.visibility = View.GONE
+                    binding.songsRecyclerView.visibility = View.VISIBLE
+                    return false
+                }else {
+                    Toast.makeText(requireActivity(),"The minimum character is 2", Toast.LENGTH_SHORT).show()
+                    return true
                 }
-                true
             }
-            false
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+
+        })
+
+
+        binding.favouriteButton.setOnClickListener{
+            itemSavedFragment.show(parentFragmentManager,itemSavedFragment.tag)
         }
     }
+
+    override fun addObservers() {
+        super.addObservers()
+        lifecycleScope.launch{
+            launch{
+                appViewModel.trackSearchPager.collectLatest {
+                    adapter.submitData(it)
+                }
+            }
+        }
+
+    }
+
+
 }

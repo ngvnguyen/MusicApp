@@ -70,6 +70,8 @@ dependencies {
     // Room với Coroutines
     implementation("androidx.room:room-ktx:$roomVersion")
 
+    implementation(libs.jetbrains.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)

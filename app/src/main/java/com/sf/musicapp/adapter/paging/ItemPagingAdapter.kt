@@ -1,24 +1,17 @@
-package com.sf.musicapp.adapter
+package com.sf.musicapp.adapter.paging
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.viewbinding.ViewBinding
-import com.sf.musicapp.R
-import com.sf.musicapp.adapter.base.BaseAdapter
-import com.sf.musicapp.data.converter.DateConverter
-import com.sf.musicapp.data.model.Album
-import com.sf.musicapp.data.model.Track
-import com.sf.musicapp.databinding.ItemAlbumLayoutBinding
-import com.sf.musicapp.databinding.ItemAlbumShimmerLayoutBinding
+import com.sf.musicapp.adapter.base.BasePagingAdapter
 import com.sf.musicapp.databinding.ItemSmallLayoutBinding
 import com.sf.musicapp.databinding.ItemSmallShimmerLayoutBinding
-import com.sf.musicapp.utils.Limits
-import com.sf.musicapp.utils.loadImg
-import com.sf.musicapp.utils.truncate
 
-class AlbumAdapter(
-    private val onItemClick:(Album)->Unit
-): BaseAdapter<Album>() {
+abstract class ItemPagingAdapter<T: Any> (
+    DIFF_CALLBACK: DiffUtil.ItemCallback<T>,
+    private val itemClick:(T)->Unit
+): BasePagingAdapter<T>(DIFF_CALLBACK) {
     override fun getDataViewBinding(
         layoutInflater: LayoutInflater,
         parent: ViewGroup
@@ -36,17 +29,19 @@ class AlbumAdapter(
 
     override fun bindData(
         binding: ViewBinding,
-        data: Album
+        data: T
     ) {
         if (binding is ItemSmallLayoutBinding){
-            binding.itemAuthor.text = DateConverter.fromDate(data.releaseDate)
-            binding.itemTitle.text = data.name
-            binding.itemImg.loadImg(data.image,R.drawable.server)
+            bind(binding,data)
             binding.root.setOnClickListener{
-                onItemClick(data)
+                itemClick(data)
             }
 
         }
     }
 
+    abstract fun bind(
+        binding: ItemSmallLayoutBinding,
+        data:T
+    )
 }

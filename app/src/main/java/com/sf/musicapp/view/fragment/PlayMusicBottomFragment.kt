@@ -1,56 +1,27 @@
 package com.sf.musicapp.view.fragment
 
-import android.app.ActionBar
-import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
-import android.os.Handler
-import android.os.Looper
-import android.view.View
 import android.widget.SeekBar
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.OnBackPressedDispatcher
-import androidx.activity.addCallback
-import androidx.annotation.OptIn
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
-import androidx.media3.common.util.Log
-import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.sf.musicapp.databinding.FragmentPlayMusicBinding
 import com.sf.musicapp.view.base.BaseBottomSheetFragment
 import com.sf.musicapp.R
-import com.sf.musicapp.data.model.Track
-import com.sf.musicapp.service.MusicService
 import com.sf.musicapp.utils.PlayerHelper
 import com.sf.musicapp.utils.loadImg
 import com.sf.musicapp.utils.toDuration
-import com.sf.musicapp.view.activity.viewmodel.AppViewModel
+import com.sf.musicapp.view.activity.viewmodel.DBViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
 import javax.inject.Inject
-import kotlin.text.toInt
 
 @AndroidEntryPoint
 class PlayMusicBottomFragment(
     private val onClose:()->Unit={}
 ): BaseBottomSheetFragment<FragmentPlayMusicBinding>() {
 
-    //private val viewModel: AppViewModel by activityViewModels()
+    private val dbViewModel: DBViewModel by activityViewModels()
 
     @Inject
     lateinit var playerHelper: PlayerHelper
@@ -61,8 +32,7 @@ class PlayMusicBottomFragment(
     override fun getViewBinding(): FragmentPlayMusicBinding {
         return FragmentPlayMusicBinding.inflate(layoutInflater)
     }
-    @Deprecated("Để test thôi")
-    private var isFavourite = false
+
 
     override fun initView() {
         super.initView()
@@ -116,7 +86,14 @@ class PlayMusicBottomFragment(
         }
 
         binding.favouriteButton.setOnClickListener{
-            onFavouriteButtonClicked()
+            lifecycleScope.launch{
+                if (dbViewModel.trackIsFavourite.value){
+                    playerHelper.currentTrack.value?.let { dbViewModel.deleteFavouriteTrack(it) }
+                }else{
+                    playerHelper.currentTrack.value?.let { dbViewModel.insertFavouriteTrack(it) }
+                }
+            }
+
         }
 
         binding.forwardButton.setOnClickListener{
@@ -153,6 +130,7 @@ class PlayMusicBottomFragment(
             launch{
                 playerHelper.currentTrack.collectLatest { track->
                     track?.let{
+                        dbViewModel.setTrackId(track.id)
                         binding.artist.text = it.artistName
                         binding.title.text = it.name
                         binding.playerView.loadImg(it.image)
@@ -164,6 +142,12 @@ class PlayMusicBottomFragment(
                     if (it){
                         binding.playButton.setIconResource(R.drawable.replay)
                     }
+                }
+            }
+            launch{
+                dbViewModel.trackIsFavourite.collectLatest {
+                    binding.favouriteButton
+                        .setIconResource(if (it) R.drawable.heart else R.drawable.heart_outline)
                 }
             }
 
@@ -181,14 +165,7 @@ class PlayMusicBottomFragment(
 
     }
 
-    private fun onFavouriteButtonClicked(){
-        isFavourite = !isFavourite
-        if (isFavourite){
-            binding.favouriteButton.setIconResource(R.drawable.heart)
-        }else{
-            binding.favouriteButton.setIconResource(R.drawable.heart_outline)
-        }
-    }
+
 
 
 

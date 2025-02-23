@@ -1,24 +1,24 @@
 package com.sf.musicapp.view.fragment
 
-import android.transition.Visibility
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.media3.ui.PlayerNotificationManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sf.musicapp.R
 import com.sf.musicapp.adapter.ItemAdapter
-import com.sf.musicapp.adapter.paging.SmallItemAdapter
+import com.sf.musicapp.adapter.paging.TrackItemAdapter
 import com.sf.musicapp.data.model.Album
 import com.sf.musicapp.data.model.Track
 import com.sf.musicapp.databinding.FragmentAlbumPickerBinding
+import com.sf.musicapp.databinding.ItemSmallLayoutBinding
 import com.sf.musicapp.utils.Limits
 import com.sf.musicapp.utils.PlayerHelper
 import com.sf.musicapp.utils.loadImg
 import com.sf.musicapp.utils.shareText
 import com.sf.musicapp.view.activity.MainActivity
 import com.sf.musicapp.view.activity.viewmodel.AppViewModel
+import com.sf.musicapp.view.activity.viewmodel.DBViewModel
 import com.sf.musicapp.view.base.BaseBottomSheetFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -29,13 +29,14 @@ import javax.inject.Inject
 class AlbumPickerFragment: BaseBottomSheetFragment<FragmentAlbumPickerBinding>() {
     @Inject
     lateinit var playerHelper: PlayerHelper
+    private val dbViewModel: DBViewModel by activityViewModels()
 
     private lateinit var album: Album
     private val appViewModel: AppViewModel by activityViewModels()
-    private lateinit var adapter: ItemAdapter
+    private lateinit var adapter: ItemAdapter<Track>
     private lateinit var playMusicBottomFragment: PlayMusicBottomFragment
     private var tracks = listOf<Track>()
-    private lateinit var adapterPager: SmallItemAdapter
+    private lateinit var adapterPager: TrackItemAdapter
 
     override fun getViewBinding(): FragmentAlbumPickerBinding {
         return FragmentAlbumPickerBinding.inflate(layoutInflater)
@@ -50,11 +51,20 @@ class AlbumPickerFragment: BaseBottomSheetFragment<FragmentAlbumPickerBinding>()
         binding.image.loadImg(album.image,R.drawable.musical_notes)
         binding.albumName.text = album.name
 
-        adapter = ItemAdapter{ track->
-            playerHelper.playNewTrack(track)
-            playMusicBottomFragment.show(parentFragmentManager, playMusicBottomFragment.tag)
-        }
-        adapterPager = SmallItemAdapter{
+        adapter = object : ItemAdapter<Track>(
+            itemClick = {
+                playerHelper.playNewTrack(it)
+                playMusicBottomFragment.show(parentFragmentManager, playMusicBottomFragment.tag)
+            }){
+            override fun bind(
+                binding: ItemSmallLayoutBinding,
+                data: Track
+            ) {
+                binding.itemAuthor.text = data.artistName
+                binding.itemTitle.text = data.name
+                binding.itemImg.loadImg(data.image, R.drawable.server)
+            } }
+        adapterPager = TrackItemAdapter{
             playerHelper.playNewTrack(it)
             playMusicBottomFragment.show(parentFragmentManager, playMusicBottomFragment.tag)
         }
@@ -79,7 +89,7 @@ class AlbumPickerFragment: BaseBottomSheetFragment<FragmentAlbumPickerBinding>()
 
         }
 
-
+        dbViewModel.setAlbumId(album.id)
     }
 
     override fun addEvent() {
@@ -101,6 +111,23 @@ class AlbumPickerFragment: BaseBottomSheetFragment<FragmentAlbumPickerBinding>()
         }
         binding.shareButton.setOnClickListener{
             context?.shareText(album.shareUrl)
+        }
+        binding.saveButton.setOnClickListener{
+            lifecycleScope.launch{
+                if (dbViewModel.albumIsSaved.value){
+                    dbViewModel.deleteSavedAlbum(album)
+                }else dbViewModel.insertSavedAlbum(album)
+            }
+        }
+    }
+
+    override fun addObservers() {
+        super.addObservers()
+        lifecycleScope.launch{
+            dbViewModel.albumIsSaved.collectLatest {
+                binding.saveButton.setIconTintResource(if (it) R.color.blue else R.color.white)
+            }
+
         }
     }
 

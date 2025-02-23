@@ -25,7 +25,7 @@ abstract class BasePagingAdapter<T:Any>(
     private var hasData = false
     init{
         addLoadStateListener {loadState->
-            showPlaceHolder = super.itemCount == 0
+            showPlaceHolder = loadState.source.refresh is LoadState.Loading
             if (!showPlaceHolder && !hasData){
                 notifyDataSetChanged()
                 hasData = true
@@ -62,7 +62,6 @@ abstract class BasePagingAdapter<T:Any>(
     private class DataViewHolder(
         val binding: ViewBinding
     ): RecyclerView.ViewHolder(binding.root)
-
 
     override fun getItemViewType(position: Int): Int {
         return if(showPlaceHolder) VIEW_TYPE_PLACEHOLDER else VIEW_TYPE_DATA

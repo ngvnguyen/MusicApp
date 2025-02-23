@@ -12,37 +12,39 @@ import com.sf.musicapp.utils.Limits
 import com.sf.musicapp.utils.loadImg
 import com.sf.musicapp.utils.truncate
 
-class ItemAdapter(
-    private val itemClick:(Track)->Unit={}
-): BaseAdapter<Track>() {
+abstract class ItemAdapter<T>(
+    private val itemClick:(T)->Unit={}
+): BaseAdapter<T>() {
     override fun getDataViewBinding(
         layoutInflater: LayoutInflater,
         parent: ViewGroup
     ): ViewBinding {
-        return ItemSmallLayoutBinding.inflate(layoutInflater,parent,false)
+        return ItemSmallLayoutBinding.inflate(layoutInflater, parent, false)
     }
 
     override fun getPlaceholderViewBinding(
         layoutInflater: LayoutInflater,
         parent: ViewGroup
     ): ViewBinding {
-        return ItemSmallShimmerLayoutBinding.inflate(layoutInflater,parent,false)
+        return ItemSmallShimmerLayoutBinding.inflate(layoutInflater, parent, false)
     }
 
 
     override fun bindData(
         binding: ViewBinding,
-        data: Track
+        data: T
     ) {
-        if (binding is ItemSmallLayoutBinding){
-            binding.itemAuthor.text = data.artistName
-            binding.itemTitle.text = data.name
-            binding.itemImg.loadImg(data.image,R.drawable.server)
-            binding.root.setOnClickListener{
+        if (binding is ItemSmallLayoutBinding) {
+            bind(binding,data)
+            binding.root.setOnClickListener {
                 itemClick(data)
             }
 
         }
     }
 
+    abstract fun bind(
+        binding: ItemSmallLayoutBinding,
+        data: T
+    )
 }

@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewbinding.ViewBinding
 import com.sf.musicapp.adapter.base.BasePagingAdapter
+import com.sf.musicapp.adapter.diff.DiffCallBack
 import com.sf.musicapp.data.converter.DateConverter
 import com.sf.musicapp.data.model.Album
 import com.sf.musicapp.databinding.ItemAlbumLayoutBinding
@@ -16,7 +17,7 @@ import com.sf.musicapp.utils.truncate
 
 class AlbumItemAdapter(
     private val onItemClick:(Album)->Unit={}
-): BasePagingAdapter<Album>(DIFF_CALLBACK){
+): BasePagingAdapter<Album>(DiffCallBack.album){
     override fun getDataViewBinding(
         layoutInflater: LayoutInflater,
         parent: ViewGroup
@@ -45,22 +46,4 @@ class AlbumItemAdapter(
         }
     }
 
-    companion object{
-        val DIFF_CALLBACK = object: DiffUtil.ItemCallback<Album>(){
-            override fun areItemsTheSame(
-                oldItem: Album,
-                newItem: Album
-            ): Boolean {
-                return oldItem.id == newItem.id
-            }
-
-            override fun areContentsTheSame(
-                oldItem: Album,
-                newItem: Album
-            ): Boolean {
-                return oldItem.id == newItem.id
-            }
-
-        }
-    }
 }

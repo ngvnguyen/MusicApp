@@ -19,7 +19,10 @@ import com.sf.musicapp.network.repository.PlaylistRepository
 import com.sf.musicapp.network.repository.TrackRepository
 import com.sf.musicapp.utils.Limits
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
@@ -53,6 +56,36 @@ class AppViewModel @Inject constructor(
         BasePagingSource<Playlist>{playlistRepository.getPlaylists(it)}
     }.flow.cachedIn(viewModelScope)
 
+    private val _query = MutableStateFlow<String>("")
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val trackSearchPager =
+        _query.flatMapLatest {query->
+            if (query.length > 1) getSearchTrackPager(query) else flowOf()
+        }.cachedIn(viewModelScope)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val albumSearchPager =
+        _query.flatMapLatest {query->
+            if (query.length > 1) getSearchAlbumPager(query) else flowOf()
+        }.cachedIn(viewModelScope)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val artistSearchPager =
+        _query.flatMapLatest { query->
+            if (query.length > 1) getSearchArtistPager(query) else flowOf()
+        }.cachedIn(viewModelScope)
+
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val playlistSearchPager =
+        _query.flatMapLatest { query->
+            if (query.length > 1) getSearchPlaylistPager(query) else flowOf()
+        }.cachedIn(viewModelScope)
+
+    /**
+    *setTrackPager để dùng
+     */
     var trackSetPager: Flow<PagingData<Track>> = flowOf()
 
     fun setTracksPager(tracks: List<Track>){
@@ -107,14 +140,37 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    suspend fun searchTrack(query:String,page:Int): List<Track>{
-        try{
-            val result = trackRepository.searchTrack(query,page)
-            return result
-        }catch (e: Exception){
-            Log.d("AlbumPickerViewModel",e.message.toString())
-            return listOf()
-        }
+    fun getSearchTrackPager(query:String):Flow<PagingData<Track>>{
+        return Pager(pagingConfig){
+            BasePagingSource<Track>(){
+                trackRepository.searchTrack(query,it)
+            }
+        }.flow.cachedIn(viewModelScope)
+    }
+    fun getSearchAlbumPager(query:String):Flow<PagingData<Album>>{
+        return Pager(pagingConfig){
+            BasePagingSource<Album>(){
+                albumRepository.searchAlbums(query,it)
+            }
+        }.flow.cachedIn(viewModelScope)
+    }
+    fun getSearchArtistPager(query: String):Flow<PagingData<Artist>>{
+        return Pager(pagingConfig){
+            BasePagingSource<Artist>(){
+                artistRepository.searchArtist(query,it)
+            }
+        }.flow.cachedIn(viewModelScope)
+    }
+    fun getSearchPlaylistPager(query: String):Flow<PagingData<Playlist>>{
+        return Pager(pagingConfig){
+            BasePagingSource<Playlist>(){
+                playlistRepository.searchPlaylists(query,it)
+            }
+        }.flow.cachedIn(viewModelScope)
+    }
+
+    fun search(query:String){
+        _query.value = query
     }
 
 }

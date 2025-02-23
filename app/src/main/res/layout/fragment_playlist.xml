@@ -1,74 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.fragment.PlaylistFragment">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/songs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Playlist"
+        android:textStyle="bold|italic"
+        android:textSize="@dimen/title_size"
+        android:layout_marginTop="@dimen/padding_top_app"
+        android:layout_marginEnd="@dimen/padding_end_app"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/saved_button"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        style="@style/Widget.Material3.Button.IconButton"
+        app:icon="@drawable/bookmark"
+        app:iconTint="@color/blue"
+        app:iconSize="40dp"
+        app:iconGravity="textStart"
+        app:strokeWidth="2dp"
+        app:strokeColor="@color/white"
+        app:cornerRadius="10dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="@color/grey"
+        app:layout_constraintTop_toBottomOf="@id/card_view"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/saved_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bookmark"
+        app:layout_constraintTop_toBottomOf="@id/saved_button"
+        app:layout_constraintStart_toStartOf="@id/saved_button"
+        android:textSize="16sp"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="12dp"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/songs_recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card_view"
+        app:layout_constraintVertical_bias="0.0"
+        android:paddingBottom="32dp"
+        android:clipToPadding="false"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Playlists"
-            android:textStyle="bold|italic"
-            android:textSize="@dimen/title_size"
-            android:layout_gravity="end"
-            android:layout_marginTop="@dimen/padding_top_app"
-            android:layout_marginEnd="@dimen/padding_end_app" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="end">
-
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/sort_playlists_by_character"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Widget.Material3.Button.IconButton"
-                android:checkable="true"
-                app:iconTint="@color/icon_select_color"
-                app:icon="@drawable/text"
-                android:backgroundTint="@color/app_background"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/sort_playlists_by_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Widget.Material3.Button.IconButton"
-                android:checkable="true"
-                app:icon="@drawable/time"
-                android:layout_marginEnd="8dp"
-                app:iconTint="@color/icon_select_color"
-                android:backgroundTint="@color/app_background"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/sort_playlists_bt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Widget.Material3.Button.IconButton"
-                app:icon="@drawable/arrow_item_selector"
-                android:checkable="true"
-                app:iconTint="@color/white"
-                android:backgroundTint="@color/app_background"/>
-
-
-
-        </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/playlists_recyclerView"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_view"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/songs"
+        android:backgroundTint="#EEEEEE"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:cardCornerRadius="30dp">
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"/>
+            android:layout_height="match_parent"
+            android:foregroundTint="#000000"
+            android:focusable="false"
+            android:hint="Search">
 
-    </LinearLayout>
+        </androidx.appcompat.widget.SearchView>
 
-</FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

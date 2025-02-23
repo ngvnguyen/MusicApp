@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sf.musicapp.adapter.paging.AlbumItemAdapter
 import com.sf.musicapp.adapter.paging.ArtistItemAdapter
 import com.sf.musicapp.adapter.paging.PlaylistItemAdapter
-import com.sf.musicapp.adapter.paging.SmallItemAdapter
+import com.sf.musicapp.adapter.paging.TrackItemAdapter
 import com.sf.musicapp.databinding.FragmentQuickPickBinding
 import com.sf.musicapp.utils.PlayerHelper
 import com.sf.musicapp.view.activity.MainActivity
@@ -41,15 +41,15 @@ class QuickPickFragment() : BaseFragment<FragmentQuickPickBinding>(){
         playMusicBottomFragment = (requireActivity() as MainActivity).playMusicBottomFragment
 
         //quick pick
-        val smallItemAdapter = SmallItemAdapter{track->
+        val trackItemAdapter = TrackItemAdapter{ track->
             playerHelper.playNewTrack(track)
             playMusicBottomFragment.show(parentFragmentManager,playMusicBottomFragment.tag)
         }
-        binding.suggestRecyclerView.adapter = smallItemAdapter
+        binding.suggestRecyclerView.adapter = trackItemAdapter
         binding.suggestRecyclerView.layoutManager = GridLayoutManager(requireActivity(),4, RecyclerView.HORIZONTAL,false)
         lifecycleScope.launch{
             viewModel.trackRecommendedPager.collectLatest {
-                smallItemAdapter.submitData(it)
+                trackItemAdapter.submitData(it)
             }
         }
 

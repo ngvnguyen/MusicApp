@@ -1,23 +1,19 @@
 package com.sf.musicapp.view.fragment
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sf.musicapp.R
-import com.sf.musicapp.adapter.AlbumAdapter
 import com.sf.musicapp.adapter.ItemAdapter
-import com.sf.musicapp.adapter.paging.SmallItemAdapter
+import com.sf.musicapp.adapter.paging.TrackItemAdapter
 import com.sf.musicapp.data.converter.DateConverter
 import com.sf.musicapp.data.model.Album
 import com.sf.musicapp.data.model.Artist
 import com.sf.musicapp.data.model.Track
 import com.sf.musicapp.databinding.FragmentArtistPickerBinding
+import com.sf.musicapp.databinding.ItemSmallLayoutBinding
 import com.sf.musicapp.utils.Jamendo
 import com.sf.musicapp.utils.Limits
 import com.sf.musicapp.utils.PlayerHelper
@@ -25,6 +21,7 @@ import com.sf.musicapp.utils.loadImg
 import com.sf.musicapp.utils.shareText
 import com.sf.musicapp.view.activity.MainActivity
 import com.sf.musicapp.view.activity.viewmodel.AppViewModel
+import com.sf.musicapp.view.activity.viewmodel.DBViewModel
 import com.sf.musicapp.view.base.BaseBottomSheetFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -37,13 +34,14 @@ class ArtistPickerFragment : BaseBottomSheetFragment<FragmentArtistPickerBinding
     @Inject
     lateinit var playerHelper: PlayerHelper
     private val appViewModel: AppViewModel by activityViewModels()
+    private val dbViewModel: DBViewModel by activityViewModels()
     private lateinit var artist: Artist
-    private lateinit var trackAdapter: ItemAdapter
-    private lateinit var albumAdapter: AlbumAdapter
+    private lateinit var trackAdapter: ItemAdapter<Track>
+    private lateinit var albumAdapter: ItemAdapter<Album>
     private var tracks = listOf<Track>()
     private var albums = listOf<Album>()
     private lateinit var playMusicBottomFragment: PlayMusicBottomFragment
-    private lateinit var trackAdapterPager: SmallItemAdapter
+    private lateinit var trackAdapterPager: TrackItemAdapter
 
     override fun getViewBinding(): FragmentArtistPickerBinding {
         return FragmentArtistPickerBinding.inflate(layoutInflater)
@@ -55,13 +53,21 @@ class ArtistPickerFragment : BaseBottomSheetFragment<FragmentArtistPickerBinding
         binding.artistName.text = artist.name
         binding.joinDate.text = DateConverter.fromDate(artist.joinDate)
         //
-        binding.image.loadImg(artist.imageUrl,R.drawable.sync)
-        trackAdapter = ItemAdapter{
-            playerHelper.playNewTrack(it)
-            playerHelper.play()
-            playMusicBottomFragment.show(parentFragmentManager, "play music")
-        }
-        trackAdapterPager = SmallItemAdapter{
+        binding.image.loadImg(artist.imageUrl,R.drawable.person)
+        trackAdapter = object : ItemAdapter<Track>(
+            itemClick = {
+                playerHelper.playNewTrack(it)
+                playMusicBottomFragment.show(parentFragmentManager, playMusicBottomFragment.tag)
+            }){
+            override fun bind(
+                binding: ItemSmallLayoutBinding,
+                data: Track
+            ) {
+                binding.itemAuthor.text = data.artistName
+                binding.itemTitle.text = data.name
+                binding.itemImg.loadImg(data.image, R.drawable.server)
+            } }
+        trackAdapterPager = TrackItemAdapter{
             playerHelper.playNewTrack(it)
             playMusicBottomFragment.show(parentFragmentManager, playMusicBottomFragment.tag)
         }
@@ -69,9 +75,16 @@ class ArtistPickerFragment : BaseBottomSheetFragment<FragmentArtistPickerBinding
         binding.trackRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
 
         val albumPickerFragment = AlbumPickerFragment()
-        albumAdapter = AlbumAdapter{
-            albumPickerFragment.show(parentFragmentManager,albumPickerFragment.tag,it)
-        }
+        albumAdapter = object : ItemAdapter<Album>(
+            itemClick = {albumPickerFragment.show(parentFragmentManager,albumPickerFragment.tag,it)}){
+            override fun bind(
+                binding: ItemSmallLayoutBinding,
+                data: Album
+            ) {
+                binding.itemAuthor.text = DateConverter.fromDate(data.releaseDate)
+                binding.itemTitle.text = data.name
+                binding.itemImg.loadImg(data.image,R.drawable.server)
+            } }
         binding.albumRecyclerView.adapter = albumAdapter
         binding.albumRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
 
@@ -102,6 +115,8 @@ class ArtistPickerFragment : BaseBottomSheetFragment<FragmentArtistPickerBinding
 
 
         }
+
+        dbViewModel.setArtistId(artist.id)
     }
 
     override fun addEvent() {
@@ -125,6 +140,24 @@ class ArtistPickerFragment : BaseBottomSheetFragment<FragmentArtistPickerBinding
                 }
             }
             binding.tracksViewAll.visibility = View.GONE
+        }
+
+        binding.saveButton.setOnClickListener{
+            lifecycleScope.launch{
+                if (dbViewModel.artistIsSaved.value){
+                    dbViewModel.deleteSavedArtist(artist)
+                }else dbViewModel.insertSavedArtist(artist)
+            }
+        }
+    }
+
+    override fun addObservers() {
+        super.addObservers()
+        lifecycleScope.launch{
+            dbViewModel.artistIsSaved.collectLatest {
+                binding.saveButton.setIconTintResource(if (it) R.color.blue else R.color.white)
+            }
+
         }
     }
 

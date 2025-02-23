@@ -9,7 +9,6 @@ import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
@@ -24,7 +23,7 @@ import com.sf.musicapp.service.MusicService
 import com.sf.musicapp.utils.PlayerHelper
 import com.sf.musicapp.utils.loadImg
 import com.sf.musicapp.view.activity.viewmodel.AppViewModel
-import com.sf.musicapp.view.fragment.AlbumPickerFragment
+import com.sf.musicapp.view.activity.viewmodel.DBViewModel
 import com.sf.musicapp.view.fragment.PlayMusicBottomFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -41,6 +40,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     // WARNING: khởi tạo viewModel, ở các fragment có sử dụng nên xóa dòng này sẽ gây lỗi
     private val viewModel: AppViewModel by viewModels()
+    private val dbViewModel: DBViewModel by viewModels()
 
     private lateinit var mediaController: MediaController
     private lateinit var controllerFuture: ListenableFuture<MediaController>

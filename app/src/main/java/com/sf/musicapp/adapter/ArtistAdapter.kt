@@ -1,25 +1,21 @@
-package com.sf.musicapp.adapter.paging
+package com.sf.musicapp.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.viewbinding.ViewBinding
+import com.sf.musicapp.R
+import com.sf.musicapp.adapter.base.BaseAdapter
+import com.sf.musicapp.data.converter.DateConverter
 import com.sf.musicapp.data.model.Artist
 import com.sf.musicapp.databinding.ItemArtistLayoutBinding
 import com.sf.musicapp.databinding.ItemArtistShimmerLayoutBinding
-import com.sf.musicapp.utils.loadImg
-import com.sf.musicapp.R
-import com.sf.musicapp.adapter.base.BasePagingAdapter
-import com.sf.musicapp.adapter.diff.DiffCallBack
-import com.sf.musicapp.data.converter.DateConverter
 import com.sf.musicapp.utils.Limits
+import com.sf.musicapp.utils.loadImg
 import com.sf.musicapp.utils.truncate
 
-class ArtistItemAdapter(
-    private val onItemClick:(Artist)->Unit={}
-) : BasePagingAdapter<Artist>(DiffCallBack.artist) {
-
-
+class ArtistAdapter(
+    private val onItemClick: (Artist) -> Unit
+): BaseAdapter<Artist>() {
     override fun getDataViewBinding(
         layoutInflater: LayoutInflater,
         parent: ViewGroup
@@ -49,6 +45,4 @@ class ArtistItemAdapter(
             }
         }
     }
-
-
 }

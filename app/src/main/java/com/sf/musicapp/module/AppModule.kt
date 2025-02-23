@@ -6,6 +6,9 @@ import android.telephony.TelephonyCallback
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.exoplayer.ExoPlayer
+import com.sf.musicapp.data.database.AppDatabase
+import com.sf.musicapp.data.repository.DatabaseRepository
+import com.sf.musicapp.data.repository.DatabaseRepositoryImpl
 import com.sf.musicapp.network.repository.AlbumRepository
 import com.sf.musicapp.network.repository.ArtistRepository
 import com.sf.musicapp.network.repository.PlaylistRepository
@@ -63,4 +66,19 @@ object AppModule {
     @Singleton
     fun getPlayerHelper(player: ExoPlayer): PlayerHelper
         = PlayerHelper(player)
+
+    @Provides
+    @Singleton
+    fun getDatabase(@ApplicationContext context: Context): AppDatabase
+        = AppDatabase.getInstance(context)
+
+    @Provides
+    @Singleton
+    fun getDatabaseRepository(appDatabase: AppDatabase): DatabaseRepository
+        = DatabaseRepositoryImpl(
+            appDatabase.trackDao,
+            appDatabase.albumDao,
+            appDatabase.artistDao,
+            appDatabase.playlistDao
+        )
 }
