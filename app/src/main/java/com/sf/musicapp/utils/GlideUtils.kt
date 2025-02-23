@@ -277,7 +277,7 @@ fun AppCompatImageView.loadImgNoCache(image: Any?) {
 
 fun ImageView.loadImg(imgUrl: Any?,@DrawableRes error: Int){
     Glide.with(this).load(imgUrl).error(error)
-        .diskCacheStrategy(DiskCacheStrategy.ALL)
+        .diskCacheStrategy(DiskCacheStrategy.DATA)
         .into(this)
 }
 
